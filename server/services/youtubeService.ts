@@ -11,10 +11,14 @@ export class YouTubeService {
    * Get channel information including subscriber count
    * @param channelId YouTube channel ID
    */
-  static async getChannelInfo(channelId: string): Promise<YouTubeChannelListResponse> {
+  static async getChannelInfo(channelId: string = process.env.YOUTUBE_CHANNEL_ID || ''): Promise<YouTubeChannelListResponse> {
     try {
+      // Use the provided channelId or fall back to the environment variable
+      const effectiveChannelId = channelId || process.env.YOUTUBE_CHANNEL_ID || '';
+      console.log(`Fetching channel info for: ${effectiveChannelId}`);
+      
       const response = await fetch(
-        `${YOUTUBE_API_BASE_URL}/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`
+        `${YOUTUBE_API_BASE_URL}/channels?part=snippet,statistics&id=${effectiveChannelId}&key=${YOUTUBE_API_KEY}`
       );
       
       if (!response.ok) {
@@ -35,14 +39,18 @@ export class YouTubeService {
    * @param pageToken Page token for pagination
    */
   static async getChannelVideos(
-    channelId: string, 
+    channelId: string = process.env.YOUTUBE_CHANNEL_ID || '', 
     maxResults: number = 50,
     pageToken?: string
   ): Promise<YouTubeVideoListResponse> {
     try {
+      // Use the provided channelId or fall back to the environment variable
+      const effectiveChannelId = channelId || process.env.YOUTUBE_CHANNEL_ID || '';
+      console.log(`Fetching videos for channel: ${effectiveChannelId}`);
+      
       // First get playlist ID for uploads
       const channelResponse = await fetch(
-        `${YOUTUBE_API_BASE_URL}/channels?part=contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`
+        `${YOUTUBE_API_BASE_URL}/channels?part=contentDetails&id=${effectiveChannelId}&key=${YOUTUBE_API_KEY}`
       );
       
       if (!channelResponse.ok) {

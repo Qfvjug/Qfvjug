@@ -42,13 +42,29 @@ export async function runMigrations() {
     const settingsCount = await db.select({ count: sql`count(*)` }).from(schema.siteSettings);
     if (Number(settingsCount[0].count) === 0) {
       console.log("Creating default site settings...");
+      // Use the custom channel ID provided by the user
+      const channelId = process.env.YOUTUBE_CHANNEL_ID;
       await db.insert(schema.siteSettings).values({
-        youtubeChannelId: "UCXuqSBlHAE6Xw-yeJA0Tunw", // Default example: Linus Tech Tips
-        featuredVideoId: "dQw4w9WgXcQ", // Default example
+        youtubeChannelId: channelId,
+        featuredVideoId: "dQw4w9WgXcQ", // We'll update this based on user's videos
         newsTickerItems: ["Welcome to my gaming channel!", "Check out the latest videos", "Don't forget to subscribe!"],
         lastUpdated: new Date()
       });
-      console.log("Default site settings created");
+      console.log("Default site settings created with channel ID: " + channelId);
+    } else {
+      // Update existing settings with the correct channel ID
+      const settings = await db.select().from(schema.siteSettings);
+      const channelId = process.env.YOUTUBE_CHANNEL_ID;
+      
+      if (settings[0].youtubeChannelId !== channelId) {
+        console.log("Updating YouTube channel ID to user's channel...");
+        await db.update(schema.siteSettings)
+          .set({ 
+            youtubeChannelId: channelId,
+            lastUpdated: new Date()
+          })
+          .where(sql`id = ${settings[0].id}`);
+      }
     }
     
     console.log("Database setup complete");
