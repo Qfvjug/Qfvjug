@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { YouTubeVideoListResponse, YouTubeChannelListResponse } from "@shared/types";
+import React from "react";
 
 export function useChannelData() {
   return useQuery<YouTubeChannelListResponse>({
@@ -25,26 +26,51 @@ export function useVideosList(maxResults: number = 12, pageToken?: string) {
   });
 }
 
-export function useVideo(videoId: string) {
-  return useQuery<YouTubeVideoListResponse>({
+export function useVideo(videoId: string, enableAutoRefresh: boolean = false) {
+  const query = useQuery<YouTubeVideoListResponse>({
     queryKey: [`/api/youtube/video/${videoId}`],
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!videoId,
   });
+  
+  // Auto-refresh option for featured videos
+  React.useEffect(() => {
+    if (!enableAutoRefresh) return;
+    
+    const interval = setInterval(() => {
+      if (videoId) {
+        query.refetch();
+      }
+    }, 60000); // Refresh every minute
+    
+    return () => clearInterval(interval);
+  }, [videoId, query.refetch, enableAutoRefresh]);
+  
+  return query;
 }
 
 export function useSubscriberCount() {
-  const { data, isLoading, error } = useChannelData();
+  const { data, isLoading, error, refetch } = useChannelData();
   
   const subscriberCount = data?.items[0]?.statistics?.subscriberCount 
     ? parseInt(data.items[0].statistics.subscriberCount, 10)
     : null;
   
+  // Refetch the data every 30 seconds for live updates
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 30000); // 30 seconds
+    
+    return () => clearInterval(interval);
+  }, [refetch]);
+  
   return {
     subscriberCount,
     isLoading,
-    error
+    error,
+    refetch
   };
 }
 

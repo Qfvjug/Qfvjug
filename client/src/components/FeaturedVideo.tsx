@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useVideo } from "@/hooks/useYouTubeData";
 import { formatCompactNumber, formatRelativeTime, formatYouTubeDuration } from "@/lib/utils";
-import { Play } from "lucide-react";
+import { Play, RefreshCw } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 type FeaturedVideoProps = {
   videoId: string;
 };
 
 const FeaturedVideo = ({ videoId }: FeaturedVideoProps) => {
-  const { data, isLoading, error } = useVideo(videoId);
+  const { data, isLoading, error, refetch } = useVideo(videoId, true);
   const [isPlaying, setIsPlaying] = useState(false);
 
   if (isLoading) {
@@ -87,7 +88,21 @@ const FeaturedVideo = ({ videoId }: FeaturedVideoProps) => {
         )}
       </div>
       <CardContent className="p-4">
-        <h3 className="font-bold text-lg mb-2">{title}</h3>
+        <div className="flex justify-between items-start">
+          <h3 className="font-bold text-lg mb-2">{title}</h3>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={(e) => {
+              e.preventDefault();
+              refetch();
+            }}
+            className="h-8 w-8 rounded-full"
+            title="Refresh video data"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
         <div className="flex items-center text-muted-foreground text-sm mb-3">
           <span>{formatCompactNumber(viewCount)} views</span>
           <span className="mx-2">•</span>

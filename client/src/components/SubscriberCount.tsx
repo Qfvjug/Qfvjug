@@ -1,9 +1,10 @@
 import { useSubscriberCount } from "@/hooks/useYouTubeData";
 import { formatCompactNumber } from "@/lib/utils";
-import { Users } from "lucide-react";
+import { RefreshCw, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const SubscriberCount = () => {
-  const { subscriberCount, isLoading, error } = useSubscriberCount();
+  const { subscriberCount, isLoading, error, refetch } = useSubscriberCount();
 
   return (
     <div className="mt-8 bg-card border border-border rounded-lg p-4 inline-flex items-center shadow-sm">
