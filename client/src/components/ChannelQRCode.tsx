@@ -14,11 +14,13 @@ export function ChannelQRCode() {
     staleTime: Infinity,
   });
 
+  const qrCodeData = data as { qrCode?: string } || {};
+
   const handleShare = async () => {
-    if (navigator.share && data?.qrCode) {
+    if (navigator.share && qrCodeData.qrCode) {
       try {
         // Convert base64 to blob for sharing
-        const response = await fetch(data.qrCode);
+        const response = await fetch(qrCodeData.qrCode);
         const blob = await response.blob();
         const file = new File([blob], "channel-qrcode.png", { type: "image/png" });
         
@@ -78,10 +80,10 @@ export function ChannelQRCode() {
         <CardDescription>Scannen Sie diesen Code, um meinen Kanal zu abonnieren</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center gap-4">
-        {data?.qrCode ? (
+        {qrCodeData.qrCode ? (
           <>
             <img 
-              src={data.qrCode} 
+              src={qrCodeData.qrCode} 
               alt="Channel QR Code" 
               className="w-[200px] h-[200px] object-contain"
             />

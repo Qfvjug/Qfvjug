@@ -7,6 +7,7 @@ import SubscriberCount from "@/components/SubscriberCount";
 import NewsTicker from "@/components/NewsTicker";
 import NotificationSection from "@/components/NotificationSection";
 import SocialLinks from "@/components/SocialLinks";
+import { ChannelQRCode } from "@/components/ChannelQRCode";
 import { Play, Download } from "lucide-react";
 import { VideoCardSkeleton } from "@/components/VideoCard";
 

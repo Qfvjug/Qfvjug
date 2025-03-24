@@ -1,19 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { BellRing, Bell, X } from "lucide-react";
-import { 
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Separator,
-} from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { formatRelativeTime } from "@/lib/utils";
@@ -24,18 +15,17 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   
-  const { data: notifications = [], isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['/api/notifications'],
     refetchInterval: 60000, // Refresh every minute
   });
 
-  const unreadCount = notifications.filter((notification: any) => !notification.isRead).length;
+  const notifications = data as any[] || [];
+  const unreadCount = notifications.filter((notification) => !notification.isRead).length;
 
   const handleMarkAsRead = async (id: number) => {
     try {
-      await apiRequest(`/api/notifications/${id}/read`, {
-        method: 'PATCH'
-      });
+      await apiRequest('/api/notifications/' + id + '/read', 'PATCH');
       
       // Invalidate notifications cache to refresh the list
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });

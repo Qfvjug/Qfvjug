@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, Menu, X, Bell, LogIn } from "lucide-react";
+import { Sun, Moon, Menu, X, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/utils";
+import { NotificationBell } from "./NotificationBell";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -103,15 +104,7 @@ const Header = () => {
             </Button>
 
             {/* Notifications */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="rounded-full relative"
-              aria-label="Notifications"
-            >
-              <span className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
-              <Bell className="h-5 w-5" />
-            </Button>
+            <NotificationBell />
 
             {/* Login/Admin */}
             {isLoggedIn ? (
