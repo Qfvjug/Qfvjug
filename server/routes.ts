@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { YouTubeService } from "./services/youtubeService";
+import { QRCodeService } from "./services/qrCodeService";
 import { z } from "zod";
 import {
   insertUserSchema,
@@ -501,6 +502,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createDownload(download);
     }
   }
+
+  // --- QR Code Routes ---
+  app.get('/api/qrcode/channel', asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      if (!settings || !settings.youtubeChannelId) {
+        return res.status(404).json({ message: 'Channel ID not configured' });
+      }
+      
+      const qrCode = await QRCodeService.generateChannelQRCode(settings.youtubeChannelId);
+      res.json({ qrCode });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to generate QR code', error: (error as Error).message });
+    }
+  }));
+  
+  app.get('/api/qrcode/video/:id', asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const videoId = req.params.id;
+      const qrCode = await QRCodeService.generateVideoQRCode(videoId);
+      res.json({ qrCode });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to generate QR code', error: (error as Error).message });
+    }
+  }));
 
   return httpServer;
 }
