@@ -6,11 +6,13 @@ import { FaYoutube, FaDiscord, FaTwitch, FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { translate } = useLanguage();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,17 +89,17 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Home
+                  {translate('home')}
                 </Link>
               </li>
               <li>
                 <Link href="/videos" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Videos
+                  {translate('videos')}
                 </Link>
               </li>
               <li>
                 <Link href="/downloads" className="text-gray-300 hover:text-white transition-colors duration-200">
-                  Downloads
+                  {translate('downloads')}
                 </Link>
               </li>
               <li>
@@ -147,7 +149,7 @@ const Footer = () => {
         
         <div className="mt-8 pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Qfvjug. All rights reserved.</p>
+            <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Qfvjug. {translate('allRightsReserved')}</p>
             <div className="mt-4 md:mt-0">
               <p className="text-gray-400 text-sm">
                 Hosted on <a href="https://replit.com" className="text-primary hover:underline">Replit</a>

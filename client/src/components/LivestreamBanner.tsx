@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Youtube } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Define type for livestream data
 interface LivestreamData {
@@ -20,6 +21,7 @@ export function LivestreamBanner({ className }: LivestreamBannerProps) {
     refetchInterval: 60000, // Check for live stream every minute
   });
 
+  const { translate } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   
   // Effect to handle animation when stream is live
@@ -55,8 +57,8 @@ export function LivestreamBanner({ className }: LivestreamBannerProps) {
                 </div>
               </div>
               <div>
-                <div className="font-bold text-lg">LIVE STREAM</div>
-                <div className="text-sm">Jetzt live auf YouTube!</div>
+                <div className="font-bold text-lg">{translate('liveStream')}</div>
+                <div className="text-sm">{translate('liveNow')}</div>
               </div>
             </div>
             <Button 
@@ -65,7 +67,7 @@ export function LivestreamBanner({ className }: LivestreamBannerProps) {
               className="bg-white text-[#2682B1] hover:bg-white/90 flex items-center space-x-2"
             >
               <Youtube className="h-4 w-4" />
-              <span>Jetzt ansehen</span>
+              <span>{translate('watchNow')}</span>
             </Button>
           </div>
         </CardContent>

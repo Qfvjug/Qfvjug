@@ -2,16 +2,18 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, Menu, X, LogIn } from "lucide-react";
+import { Sun, Moon, Menu, X, LogIn, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/utils";
 import { NotificationBell } from "./NotificationBell";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const { theme, setTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
+  const { language, translate } = useLanguage();
 
   // Check if user is logged in
   const isLoggedIn = auth.isLoggedIn();
@@ -66,19 +68,19 @@ const Header = () => {
               "text-foreground hover:text-primary font-medium transition-colors",
               location === "/" && "text-primary"
             )}>
-              Home
+              {translate('home')}
             </Link>
             <Link href="/videos" className={cn(
               "text-foreground hover:text-primary font-medium transition-colors",
               location === "/videos" && "text-primary"
             )}>
-              Videos
+              {translate('videos')}
             </Link>
             <Link href="/downloads" className={cn(
               "text-foreground hover:text-primary font-medium transition-colors",
               location === "/downloads" && "text-primary"
             )}>
-              Downloads
+              {translate('downloads')}
             </Link>
           </nav>
 
@@ -102,14 +104,14 @@ const Header = () => {
             {isLoggedIn ? (
               <Link href="/admin" className="hidden md:flex">
                 <Button size="sm">
-                  Admin Panel
+                  {translate('adminPanel')}
                 </Button>
               </Link>
             ) : (
               <Link href="/login" className="hidden md:flex">
                 <Button size="sm">
                   <LogIn className="h-4 w-4 mr-2" />
-                  <span>Login</span>
+                  <span>{translate('login')}</span>
                 </Button>
               </Link>
             )}
@@ -142,7 +144,7 @@ const Header = () => {
             )}
             onClick={closeMenu}
           >
-            Home
+            {translate('home')}
           </Link>
           <Link 
             href="/videos" 
@@ -152,7 +154,7 @@ const Header = () => {
             )}
             onClick={closeMenu}
           >
-            Videos
+            {translate('videos')}
           </Link>
           <Link 
             href="/downloads"
@@ -162,7 +164,7 @@ const Header = () => {
             )}
             onClick={closeMenu}
           >
-            Downloads
+            {translate('downloads')}
           </Link>
           {isLoggedIn ? (
             <Link 
@@ -170,7 +172,7 @@ const Header = () => {
               className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
               onClick={closeMenu}
             >
-              Admin Panel
+              {translate('adminPanel')}
             </Link>
           ) : (
             <Link 
@@ -178,7 +180,7 @@ const Header = () => {
               className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
               onClick={closeMenu}
             >
-              Login
+              {translate('login')}
             </Link>
           )}
         </div>
