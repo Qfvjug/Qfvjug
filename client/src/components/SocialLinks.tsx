@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FaYoutube, FaDiscord, FaTwitter, FaGithub, FaPatreon } from "react-icons/fa";
+import { FaYoutube, FaDiscord, FaTwitter, FaGithub, FaPatreon, FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -40,11 +40,11 @@ const SocialLinks = () => {
 
   // Social media platforms with their colors and icons
   const socialPlatforms = [
-    { name: "YouTube", icon: FaYoutube, color: "#FF0000", url: "#" },
-    { name: "Discord", icon: FaDiscord, color: "#5865F2", url: "#" },
-    { name: "Twitter", icon: FaTwitter, color: "#1DA1F2", url: "#" },
-    { name: "GitHub", icon: FaGithub, color: "#181717", url: "#" },
-    { name: "Patreon", icon: FaPatreon, color: "rgb(232, 91, 70)", url: "#" },
+    { name: "YouTube", icon: FaYoutube, color: "#FF0000", url: "https://youtube.com/channel/UCfvPPfsOkPkAU6cfCfnIp0A" },
+    { name: "Discord", icon: FaDiscord, color: "#5865F2", url: "https://discord.gg/your-invitation-code" },
+    { name: "WhatsApp", icon: FaWhatsapp, color: "#25D366", url: "https://wa.me/your-phone-number" },
+    { name: "Twitter", icon: FaTwitter, color: "#1DA1F2", url: "https://twitter.com/your-username" },
+    { name: "GitHub", icon: FaGithub, color: "#181717", url: "https://github.com/your-username" },
   ];
 
   return (
@@ -60,6 +60,8 @@ const SocialLinks = () => {
             <a 
               key={platform.name} 
               href={platform.url} 
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex flex-col items-center p-4 rounded-xl bg-card border border-border hover:shadow-md transition-all duration-200"
             >
               <div 
