@@ -80,6 +80,36 @@ const HomePage = () => {
       {/* Notification Section */}
       <NotificationSection />
 
+      {/* Connect Section with QR Code */}
+      <section className="py-16 bg-muted/50">
+        <div className="container mx-auto px-4 md:px-6">
+          <h2 className="text-3xl font-bold text-center mb-10">Verbinde dich mit mir</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* QR Code */}
+            <div className="md:order-2">
+              <ChannelQRCode />
+            </div>
+            
+            {/* Info text */}
+            <div className="space-y-4 md:order-1">
+              <h3 className="text-2xl font-semibold">Scanne den QR-Code</h3>
+              <p className="text-muted-foreground">
+                Scanne einfach diesen QR-Code mit deinem Smartphone, um direkt zu meinem YouTube-Kanal zu gelangen. 
+                Abonniere den Kanal, um keine neuen Videos zu verpassen!
+              </p>
+              <p className="text-muted-foreground">
+                Du kannst den QR-Code auch mit Freunden teilen, die an meinen Inhalten interessiert sein könnten.
+              </p>
+              <div className="pt-4">
+                <Button size="lg" onClick={() => window.open('https://youtube.com/channel/' + settings?.youtubeChannelId, '_blank')}>
+                  Zum Kanal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Social Links */}
       <SocialLinks />
     </>
