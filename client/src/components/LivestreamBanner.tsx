@@ -45,13 +45,13 @@ export function LivestreamBanner({ className }: LivestreamBannerProps) {
     <div 
       className={`transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-20'} ${className}`}
     >
-      <Card className="bg-red-600 mb-6 overflow-hidden">
+      <Card className="bg-[#2682B1] mb-6 overflow-hidden">
         <CardContent className="p-0">
           <div className="flex items-center justify-between p-4 text-white">
             <div className="flex items-center space-x-3">
               <div className="animate-pulse">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-20">
-                  <div className="w-4 h-4 rounded-full bg-red-500"></div>
+                  <div className="w-4 h-4 rounded-full bg-blue-500"></div>
                 </div>
               </div>
               <div>
@@ -62,7 +62,7 @@ export function LivestreamBanner({ className }: LivestreamBannerProps) {
             <Button 
               variant="secondary" 
               onClick={handleWatchNow} 
-              className="bg-white text-red-600 hover:bg-white/90 flex items-center space-x-2"
+              className="bg-white text-[#2682B1] hover:bg-white/90 flex items-center space-x-2"
             >
               <Youtube className="h-4 w-4" />
               <span>Jetzt ansehen</span>
