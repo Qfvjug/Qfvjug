@@ -1,6 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FaYoutube, FaDiscord, FaTwitter, FaGithub, FaPatreon, FaWhatsapp } from "react-icons/fa";
+import {
+  FaYoutube,
+  FaDiscord,
+  FaTwitch,
+  FaGithub,
+  FaPatreon,
+  FaWhatsapp,
+} from "react-icons/fa";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,11 +20,11 @@ const QRCode = () => (
         <div className="col-span-2 row-span-2 bg-black rounded-sm"></div>
         <div className="col-span-1 row-span-2 bg-white rounded-sm"></div>
         <div className="col-span-2 row-span-2 bg-black rounded-sm"></div>
-        
+
         <div className="col-span-2 row-span-1 bg-white rounded-sm"></div>
         <div className="col-span-1 row-span-1 bg-black rounded-sm"></div>
         <div className="col-span-2 row-span-1 bg-white rounded-sm"></div>
-        
+
         <div className="col-span-2 row-span-2 bg-black rounded-sm"></div>
         <div className="col-span-1 row-span-2 bg-white rounded-sm"></div>
         <div className="col-span-2 row-span-2 bg-black rounded-sm"></div>
@@ -31,7 +38,7 @@ const SocialLinks = () => {
   const { toast } = useToast();
 
   const handleGenerateQR = () => {
-    setQrKey(prev => prev + 1);
+    setQrKey((prev) => prev + 1);
     toast({
       title: "QR Code Generated",
       description: "A new QR code has been generated for the website.",
@@ -40,11 +47,36 @@ const SocialLinks = () => {
 
   // Social media platforms with their colors and icons
   const socialPlatforms = [
-    { name: "YouTube", icon: FaYoutube, color: "#FF0000", url: "https://youtube.com/channel/UCfvPPfsOkPkAU6cfCfnIp0A" },
-    { name: "Discord", icon: FaDiscord, color: "#5865F2", url: "https://discord.gg/your-invitation-code" },
-    { name: "WhatsApp", icon: FaWhatsapp, color: "#25D366", url: "https://wa.me/your-phone-number" },
-    { name: "Twitter", icon: FaTwitter, color: "#1DA1F2", url: "https://twitter.com/your-username" },
-    { name: "GitHub", icon: FaGithub, color: "#181717", url: "https://github.com/your-username" },
+    {
+      name: "YouTube",
+      icon: FaYoutube,
+      color: "#FF0000",
+      url: "https://youtube.com/channel/UCfvPPfsOkPkAU6cfCfnIp0A",
+    },
+    {
+      name: "Discord",
+      icon: FaDiscord,
+      color: "#5865F2",
+      url: "https://discord.gg/PSYb9Zyk",
+    },
+    {
+      name: "WhatsApp",
+      icon: FaWhatsapp,
+      color: "#25D366",
+      url: "https://whatsapp.com/channel/0029VaeYRX4HltYAwQ4Phn2g ",
+    },
+    {
+      name: "Twitch",
+      icon: FaTwitch,
+      color: "#6441A4",
+      url: "https://twitch.tv/qfvjug",
+    },
+    {
+      name: "GitHub",
+      icon: FaGithub,
+      color: "#181717",
+      url: "https://github.com/Qfvjug",
+    },
   ];
 
   return (
@@ -52,19 +84,20 @@ const SocialLinks = () => {
       <div className="container mx-auto px-4 md:px-6 text-center">
         <h2 className="text-3xl font-bold mb-4">Connect With Me</h2>
         <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Follow me on social media to stay updated with the latest videos, games, and behind-the-scenes content.
+          Follow me on social media to stay updated with the latest videos,
+          games, and behind-the-scenes content.
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-3xl mx-auto">
           {socialPlatforms.map((platform) => (
-            <a 
-              key={platform.name} 
-              href={platform.url} 
+            <a
+              key={platform.name}
+              href={platform.url}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center p-4 rounded-xl bg-card border border-border hover:shadow-md transition-all duration-200"
             >
-              <div 
+              <div
                 className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
                 style={{ backgroundColor: platform.color }}
               >
@@ -85,10 +118,7 @@ const SocialLinks = () => {
             <p className="text-muted-foreground text-sm mb-4">
               Scan this QR code to access my website from your mobile device.
             </p>
-            <Button 
-              className="w-full" 
-              onClick={handleGenerateQR}
-            >
+            <Button className="w-full" onClick={handleGenerateQR}>
               Generate New QR
             </Button>
           </div>

@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Mail, Smartphone } from "lucide-react";
-import { FaYoutube, FaDiscord, FaTwitter, FaGithub } from "react-icons/fa";
+import { FaYoutube, FaDiscord, FaTwitch, FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -73,8 +73,8 @@ const Footer = () => {
               <a href="https://discord.gg/your-invitation-code" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors duration-200">
                 <FaDiscord className="w-6 h-6" />
               </a>
-              <a href="https://twitter.com/your-username" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors duration-200">
-                <FaTwitter className="w-6 h-6" />
+              <a href="https://twitch.tv/qfvjug" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <FaTwitch className="w-6 h-6" />
               </a>
               <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors duration-200">
                 <FaGithub className="w-6 h-6" />
