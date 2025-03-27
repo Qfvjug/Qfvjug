@@ -4,7 +4,8 @@ import {
   Download, InsertDownload,
   Notification, InsertNotification,
   Subscriber, InsertSubscriber,
-  SiteSetting, InsertSiteSetting
+  SiteSetting, InsertSiteSetting,
+  Comment, InsertComment
 } from "@shared/schema";
 
 import { db } from "./db";
@@ -54,6 +55,14 @@ export interface IStorage {
   // Site settings operations
   getSiteSettings(): Promise<SiteSetting | undefined>;
   updateSiteSettings(settings: Partial<InsertSiteSetting>): Promise<SiteSetting | undefined>;
+  updateLiveStreamStatus(isLive: boolean, streamId?: string): Promise<SiteSetting | undefined>;
+  
+  // Comments operations
+  getCommentsByVideo(videoId: number): Promise<Comment[]>;
+  getComment(id: number): Promise<Comment | undefined>;
+  createComment(comment: InsertComment): Promise<Comment>;
+  deleteComment(id: number): Promise<boolean>;
+  approveComment(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -295,31 +304,97 @@ export class DatabaseStorage implements IStorage {
     
     if (existingSettings) {
       // Verwende SQL direkt für das Update
-      const result = await db.execute(
-        sql`UPDATE site_settings 
-            SET youtube_channel_id = ${settings.youtubeChannelId ?? existingSettings.youtubeChannelId},
-                featured_video_id = ${settings.featuredVideoId ?? existingSettings.featuredVideoId},
-                news_ticker_items = ${settings.newsTickerItems ? JSON.stringify(settings.newsTickerItems) : existingSettings.newsTickerItems},
-                last_updated = ${new Date()}
-            WHERE id = ${existingSettings.id}
-            RETURNING *`
-      );
+      const result = await db.update(schema.siteSettings)
+        .set({
+          youtubeChannelId: settings.youtubeChannelId ?? existingSettings.youtubeChannelId,
+          featuredVideoId: settings.featuredVideoId ?? existingSettings.featuredVideoId,
+          newsTickerItems: settings.newsTickerItems ?? existingSettings.newsTickerItems,
+          isLiveStreaming: settings.isLiveStreaming ?? existingSettings.isLiveStreaming,
+          liveStreamId: settings.liveStreamId ?? existingSettings.liveStreamId,
+          lastUpdated: new Date()
+        })
+        .where(eq(schema.siteSettings.id, existingSettings.id))
+        .returning();
       
       return result[0];
     } else {
       // Verwende SQL direkt für den Insert
       const defaultItems = ['Welcome to my channel!'];
-      const result = await db.execute(
-        sql`INSERT INTO site_settings (youtube_channel_id, featured_video_id, news_ticker_items, last_updated)
-            VALUES (${settings.youtubeChannelId ?? null},
-                   ${settings.featuredVideoId ?? null},
-                   ${settings.newsTickerItems ? JSON.stringify(settings.newsTickerItems) : JSON.stringify(defaultItems)},
-                   ${new Date()})
-            RETURNING *`
-      );
+      const result = await db.insert(schema.siteSettings)
+        .values({
+          youtubeChannelId: settings.youtubeChannelId ?? null,
+          featuredVideoId: settings.featuredVideoId ?? null,
+          newsTickerItems: settings.newsTickerItems ?? defaultItems,
+          isLiveStreaming: settings.isLiveStreaming ?? false,
+          liveStreamId: settings.liveStreamId ?? null,
+          lastUpdated: new Date()
+        })
+        .returning();
       
       return result[0];
     }
+  }
+  
+  async updateLiveStreamStatus(isLive: boolean, streamId?: string): Promise<SiteSetting | undefined> {
+    const existingSettings = await this.getSiteSettings();
+    
+    if (existingSettings) {
+      const result = await db.update(schema.siteSettings)
+        .set({
+          isLiveStreaming: isLive,
+          liveStreamId: streamId ?? existingSettings.liveStreamId,
+          lastUpdated: new Date()
+        })
+        .where(eq(schema.siteSettings.id, existingSettings.id))
+        .returning();
+      
+      return result[0];
+    }
+    
+    return undefined;
+  }
+  
+  // Comments operations
+  async getCommentsByVideo(videoId: number): Promise<Comment[]> {
+    return db.select()
+      .from(schema.comments)
+      .where(eq(schema.comments.videoId, videoId))
+      .orderBy(desc(schema.comments.createdAt));
+  }
+  
+  async getComment(id: number): Promise<Comment | undefined> {
+    const comments = await db.select()
+      .from(schema.comments)
+      .where(eq(schema.comments.id, id));
+    return comments[0];
+  }
+  
+  async createComment(comment: InsertComment): Promise<Comment> {
+    const result = await db.insert(schema.comments)
+      .values({
+        ...comment,
+        createdAt: new Date()
+      })
+      .returning();
+    
+    return result[0];
+  }
+  
+  async deleteComment(id: number): Promise<boolean> {
+    const result = await db.delete(schema.comments)
+      .where(eq(schema.comments.id, id))
+      .returning({ id: schema.comments.id });
+    
+    return result.length > 0;
+  }
+  
+  async approveComment(id: number): Promise<boolean> {
+    const result = await db.update(schema.comments)
+      .set({ approved: true })
+      .where(eq(schema.comments.id, id))
+      .returning();
+    
+    return result.length > 0;
   }
 }
 

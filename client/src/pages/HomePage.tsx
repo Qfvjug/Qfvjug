@@ -8,6 +8,7 @@ import NewsTicker from "@/components/NewsTicker";
 import NotificationSection from "@/components/NotificationSection";
 import SocialLinks from "@/components/SocialLinks";
 import { ChannelQRCode } from "@/components/ChannelQRCode";
+import { LivestreamBanner } from "@/components/LivestreamBanner";
 import { Play, Download } from "lucide-react";
 import { VideoCardSkeleton } from "@/components/VideoCard";
 
@@ -60,6 +61,11 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Livestream Banner */}
+      <div className="container mx-auto px-4 md:px-6">
+        <LivestreamBanner />
+      </div>
+      
       {/* News Ticker */}
       <NewsTicker />
 

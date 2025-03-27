@@ -8,7 +8,8 @@ import VideoManager from "@/components/AdminComponents/VideoManager";
 import DownloadManager from "@/components/AdminComponents/DownloadManager";
 import NotificationManager from "@/components/AdminComponents/NotificationManager";
 import SettingsManager from "@/components/AdminComponents/SettingsManager";
-import { LogOut, Video, Download, Bell, Settings } from "lucide-react";
+import LivestreamManager from "@/components/AdminComponents/LivestreamManager";
+import { LogOut, Video, Download, Bell, Settings, Radio } from "lucide-react";
 
 const AdminPanel = () => {
   const [, setLocation] = useLocation();
@@ -51,7 +52,7 @@ const AdminPanel = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 mb-8">
+        <TabsList className="grid grid-cols-5 mb-8">
           <TabsTrigger value="videos" className="flex items-center gap-2">
             <Video className="h-4 w-4" />
             <span className="hidden sm:inline">Videos</span>
@@ -63,6 +64,10 @@ const AdminPanel = () => {
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
             <span className="hidden sm:inline">Notifications</span>
+          </TabsTrigger>
+          <TabsTrigger value="livestream" className="flex items-center gap-2">
+            <Radio className="h-4 w-4" />
+            <span className="hidden sm:inline">Livestream</span>
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -80,6 +85,10 @@ const AdminPanel = () => {
         
         <TabsContent value="notifications" className="space-y-6">
           <NotificationManager />
+        </TabsContent>
+        
+        <TabsContent value="livestream" className="space-y-6">
+          <LivestreamManager />
         </TabsContent>
         
         <TabsContent value="settings" className="space-y-6">

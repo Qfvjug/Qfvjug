@@ -60,7 +60,19 @@ export const siteSettings = pgTable("site_settings", {
   youtubeChannelId: text("youtube_channel_id"),
   featuredVideoId: text("featured_video_id"),
   newsTickerItems: jsonb("news_ticker_items").$type<string[]>(),
+  isLiveStreaming: boolean("is_live_streaming").default(false).notNull(),
+  liveStreamId: text("live_stream_id"),
   lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+});
+
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  videoId: integer("video_id").references(() => videos.id).notNull(),
+  userId: integer("user_id").references(() => users.id),
+  author: text("author").notNull(),
+  content: text("content").notNull(),
+  approved: boolean("approved").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Zod schemas for validation
@@ -107,6 +119,16 @@ export const insertSiteSettingsSchema = createInsertSchema(siteSettings).pick({
   youtubeChannelId: true,
   featuredVideoId: true,
   newsTickerItems: true,
+  isLiveStreaming: true,
+  liveStreamId: true,
+});
+
+export const insertCommentSchema = createInsertSchema(comments).pick({
+  videoId: true,
+  userId: true,
+  author: true,
+  content: true,
+  approved: true,
 });
 
 // Types
@@ -127,3 +149,6 @@ export type InsertSubscriber = z.infer<typeof insertSubscriberSchema>;
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type InsertSiteSetting = z.infer<typeof insertSiteSettingsSchema>;
+
+export type Comment = typeof comments.$inferSelect;
+export type InsertComment = z.infer<typeof insertCommentSchema>;

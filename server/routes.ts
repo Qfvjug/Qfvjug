@@ -10,7 +10,8 @@ import {
   insertDownloadSchema,
   insertNotificationSchema,
   insertSubscriberSchema,
-  insertSiteSettingsSchema
+  insertSiteSettingsSchema,
+  insertCommentSchema
 } from "@shared/schema";
 import { compare, hash } from "bcrypt";
 
@@ -525,6 +526,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ qrCode });
     } catch (error) {
       res.status(500).json({ message: 'Failed to generate QR code', error: (error as Error).message });
+    }
+  }));
+
+  // --- Comments Routes ---
+  app.get('/api/videos/:videoId/comments', asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.videoId);
+      
+      // Check if video exists
+      const existingVideo = await storage.getVideo(videoId);
+      if (!existingVideo) {
+        return res.status(404).json({ message: 'Video not found' });
+      }
+      
+      const comments = await storage.getCommentsByVideo(videoId);
+      // Only return approved comments for non-admin users
+      if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        const approvedComments = comments.filter(comment => comment.approved);
+        return res.json(approvedComments);
+      }
+      
+      res.json(comments);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch comments', error: (error as Error).message });
+    }
+  }));
+  
+  app.post('/api/videos/:videoId/comments', asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.videoId);
+      
+      // Check if video exists
+      const existingVideo = await storage.getVideo(videoId);
+      if (!existingVideo) {
+        return res.status(404).json({ message: 'Video not found' });
+      }
+      
+      // Validate the input
+      const commentData = {
+        ...req.body,
+        videoId: videoId,
+        approved: false
+      };
+      
+      const validationResult = insertCommentSchema.safeParse(commentData);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ message: 'Invalid comment data', errors: validationResult.error.errors });
+      }
+      
+      const comment = await storage.createComment(validationResult.data);
+      res.status(201).json(comment);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to create comment', error: (error as Error).message });
+    }
+  }));
+  
+  app.delete('/api/comments/:id', authenticateAdmin, asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Check if comment exists
+      const existingComment = await storage.getComment(id);
+      if (!existingComment) {
+        return res.status(404).json({ message: 'Comment not found' });
+      }
+      
+      await storage.deleteComment(id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to delete comment', error: (error as Error).message });
+    }
+  }));
+  
+  app.post('/api/comments/:id/approve', authenticateAdmin, asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Check if comment exists
+      const existingComment = await storage.getComment(id);
+      if (!existingComment) {
+        return res.status(404).json({ message: 'Comment not found' });
+      }
+      
+      await storage.approveComment(id);
+      res.status(200).json({ message: 'Comment approved successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to approve comment', error: (error as Error).message });
+    }
+  }));
+  
+  // --- Livestream Routes ---
+  app.get('/api/livestream', asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      
+      if (!settings) {
+        return res.status(404).json({ message: 'Site settings not found' });
+      }
+      
+      res.json({
+        isLiveStreaming: settings.isLiveStreaming,
+        liveStreamId: settings.liveStreamId
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch livestream status', error: (error as Error).message });
+    }
+  }));
+  
+  app.post('/api/livestream', authenticateAdmin, asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { isLiveStreaming, liveStreamId } = req.body;
+      
+      if (typeof isLiveStreaming !== 'boolean') {
+        return res.status(400).json({ message: 'isLiveStreaming must be a boolean' });
+      }
+      
+      if (isLiveStreaming && !liveStreamId) {
+        return res.status(400).json({ message: 'liveStreamId is required when going live' });
+      }
+      
+      const updatedSettings = await storage.updateLiveStreamStatus(isLiveStreaming, liveStreamId);
+      
+      if (!updatedSettings) {
+        return res.status(404).json({ message: 'Site settings not found' });
+      }
+      
+      res.json({
+        isLiveStreaming: updatedSettings.isLiveStreaming,
+        liveStreamId: updatedSettings.liveStreamId
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to update livestream status', error: (error as Error).message });
     }
   }));
 
