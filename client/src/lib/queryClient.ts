@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { API_BASE_URL } from "./constants";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -7,12 +8,22 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// Fügt API-Basispfad zur URL hinzu, wenn URL mit / beginnt
+function getFullUrl(url: string): string {
+  if (url.startsWith('/api/')) {
+    return `${API_BASE_URL}${url}`;
+  }
+  return url;
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const fullUrl = getFullUrl(url);
+  
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -29,7 +40,10 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    // Verwendung der Funktion getFullUrl für queryKey[0]
+    const fullUrl = getFullUrl(queryKey[0] as string);
+    
+    const res = await fetch(fullUrl, {
       credentials: "include",
     });
 

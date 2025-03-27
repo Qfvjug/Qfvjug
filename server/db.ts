@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
+import { Pool } from "@neondatabase/serverless";
 
 // Environment variables for database connection
 const connectionString = process.env.DATABASE_URL || '';
@@ -11,9 +12,22 @@ if (!connectionString) {
   throw new Error("DATABASE_URL environment variable is required");
 }
 
-// Create database connection
-const client = postgres(connectionString);
-export const db = drizzle(client, { schema });
+// Wähle die richtige Datenbankverbindung je nach Umgebung
+let db;
+
+if (process.env.NODE_ENV === 'production') {
+  // Für Netlify (Serverless) verwenden wir den @neondatabase/serverless Pool
+  console.log('Using Neon Serverless Pool for database connection');
+  const pool = new Pool({ connectionString });
+  db = drizzle(pool, { schema });
+} else {
+  // Für lokale Entwicklung verwenden wir postgres-js
+  console.log('Using postgres-js for local database connection');
+  const client = postgres(connectionString);
+  db = drizzle(client, { schema });
+}
+
+export { db };
 
 // DB migration function - can be called during app startup
 export async function runMigrations() {
