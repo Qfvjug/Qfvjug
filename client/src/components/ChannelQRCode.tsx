@@ -49,8 +49,8 @@ export function ChannelQRCode() {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle><Skeleton className="h-6 w-[250px]" /></CardTitle>
-          <CardDescription><Skeleton className="h-4 w-[300px]" /></CardDescription>
+          <CardTitle className="flex"><Skeleton className="h-6 w-[250px]" /></CardTitle>
+          <div className="mt-1"><Skeleton className="h-4 w-[300px]" /></div>
         </CardHeader>
         <CardContent className="flex items-center justify-center p-6">
           <Skeleton className="h-[200px] w-[200px]" />

@@ -8,7 +8,7 @@ import {
 } from "@shared/schema";
 
 import { db } from "./db";
-import { eq, desc, asc, and } from "drizzle-orm";
+import { eq, desc, asc, and, sql } from "drizzle-orm";
 import * as schema from "@shared/schema";
 import { hash } from "bcrypt";
 
@@ -294,22 +294,29 @@ export class DatabaseStorage implements IStorage {
     const existingSettings = await this.getSiteSettings();
     
     if (existingSettings) {
-      const result = await db.update(schema.siteSettings)
-        .set({
-          ...settings,
-          lastUpdated: new Date()
-        })
-        .where(eq(schema.siteSettings.id, existingSettings.id))
-        .returning();
+      // Verwende SQL direkt für das Update
+      const result = await db.execute(
+        sql`UPDATE site_settings 
+            SET youtube_channel_id = ${settings.youtubeChannelId ?? existingSettings.youtubeChannelId},
+                featured_video_id = ${settings.featuredVideoId ?? existingSettings.featuredVideoId},
+                news_ticker_items = ${settings.newsTickerItems ? JSON.stringify(settings.newsTickerItems) : existingSettings.newsTickerItems},
+                last_updated = ${new Date()}
+            WHERE id = ${existingSettings.id}
+            RETURNING *`
+      );
       
       return result[0];
     } else {
-      const result = await db.insert(schema.siteSettings).values({
-        youtubeChannelId: settings.youtubeChannelId || null,
-        featuredVideoId: settings.featuredVideoId || null,
-        newsTickerItems: settings.newsTickerItems || [],
-        lastUpdated: new Date()
-      }).returning();
+      // Verwende SQL direkt für den Insert
+      const defaultItems = ['Welcome to my channel!'];
+      const result = await db.execute(
+        sql`INSERT INTO site_settings (youtube_channel_id, featured_video_id, news_ticker_items, last_updated)
+            VALUES (${settings.youtubeChannelId ?? null},
+                   ${settings.featuredVideoId ?? null},
+                   ${settings.newsTickerItems ? JSON.stringify(settings.newsTickerItems) : JSON.stringify(defaultItems)},
+                   ${new Date()})
+            RETURNING *`
+      );
       
       return result[0];
     }
