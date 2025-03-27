@@ -52,41 +52,33 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <Link href="/">
-              <a className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
                 <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg">Q</span>
                 </div>
                 <span className="font-bold text-xl hidden sm:inline-block">Qfvjug</span>
-              </a>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/">
-              <a className={cn(
-                "text-foreground hover:text-primary font-medium transition-colors",
-                location === "/" && "text-primary"
-              )}>
-                Home
-              </a>
+            <Link href="/" className={cn(
+              "text-foreground hover:text-primary font-medium transition-colors",
+              location === "/" && "text-primary"
+            )}>
+              Home
             </Link>
-            <Link href="/videos">
-              <a className={cn(
-                "text-foreground hover:text-primary font-medium transition-colors",
-                location === "/videos" && "text-primary"
-              )}>
-                Videos
-              </a>
+            <Link href="/videos" className={cn(
+              "text-foreground hover:text-primary font-medium transition-colors",
+              location === "/videos" && "text-primary"
+            )}>
+              Videos
             </Link>
-            <Link href="/downloads">
-              <a className={cn(
-                "text-foreground hover:text-primary font-medium transition-colors",
-                location === "/downloads" && "text-primary"
-              )}>
-                Downloads
-              </a>
+            <Link href="/downloads" className={cn(
+              "text-foreground hover:text-primary font-medium transition-colors",
+              location === "/downloads" && "text-primary"
+            )}>
+              Downloads
             </Link>
           </nav>
 
@@ -108,14 +100,14 @@ const Header = () => {
 
             {/* Login/Admin */}
             {isLoggedIn ? (
-              <Link href="/admin">
-                <Button className="hidden md:flex" size="sm">
+              <Link href="/admin" className="hidden md:flex">
+                <Button size="sm">
                   Admin Panel
                 </Button>
               </Link>
             ) : (
-              <Link href="/login">
-                <Button className="hidden md:flex" size="sm">
+              <Link href="/login" className="hidden md:flex">
+                <Button size="sm">
                   <LogIn className="h-4 w-4 mr-2" />
                   <span>Login</span>
                 </Button>
@@ -142,56 +134,51 @@ const Header = () => {
         isOpen ? "block border-t border-border" : "hidden"
       )}>
         <div className="px-4 py-3 space-y-1">
-          <Link href="/">
-            <a 
-              className={cn(
-                "block px-3 py-2 rounded-md text-base font-medium hover:bg-muted",
-                location === "/" && "bg-muted"
-              )}
-              onClick={closeMenu}
-            >
-              Home
-            </a>
+          <Link 
+            href="/"
+            className={cn(
+              "block px-3 py-2 rounded-md text-base font-medium hover:bg-muted",
+              location === "/" && "bg-muted"
+            )}
+            onClick={closeMenu}
+          >
+            Home
           </Link>
-          <Link href="/videos">
-            <a 
-              className={cn(
-                "block px-3 py-2 rounded-md text-base font-medium hover:bg-muted",
-                location === "/videos" && "bg-muted"
-              )}
-              onClick={closeMenu}
-            >
-              Videos
-            </a>
+          <Link 
+            href="/videos" 
+            className={cn(
+              "block px-3 py-2 rounded-md text-base font-medium hover:bg-muted",
+              location === "/videos" && "bg-muted"
+            )}
+            onClick={closeMenu}
+          >
+            Videos
           </Link>
-          <Link href="/downloads">
-            <a 
-              className={cn(
-                "block px-3 py-2 rounded-md text-base font-medium hover:bg-muted",
-                location === "/downloads" && "bg-muted"
-              )}
-              onClick={closeMenu}
-            >
-              Downloads
-            </a>
+          <Link 
+            href="/downloads"
+            className={cn(
+              "block px-3 py-2 rounded-md text-base font-medium hover:bg-muted",
+              location === "/downloads" && "bg-muted"
+            )}
+            onClick={closeMenu}
+          >
+            Downloads
           </Link>
           {isLoggedIn ? (
-            <Link href="/admin">
-              <a 
-                className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
-                onClick={closeMenu}
-              >
-                Admin Panel
-              </a>
+            <Link 
+              href="/admin"
+              className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
+              onClick={closeMenu}
+            >
+              Admin Panel
             </Link>
           ) : (
-            <Link href="/login">
-              <a 
-                className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
-                onClick={closeMenu}
-              >
-                Login
-              </a>
+            <Link 
+              href="/login"
+              className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
+              onClick={closeMenu}
+            >
+              Login
             </Link>
           )}
         </div>

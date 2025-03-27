@@ -38,29 +38,45 @@ export function NotificationBell() {
     }
   };
 
+  // State to track notification permission
+  const [notificationPermission, setNotificationPermission] = useState<string>("default");
+
   // Request notification permission when component mounts
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      // We'll ask for permission when the user interacts with the bell
+    // Check if notifications are supported
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setNotificationPermission(Notification.permission);
     }
   }, []);
 
   const requestNotificationPermission = async () => {
-    if ('Notification' in window) {
-      const permission = await Notification.requestPermission();
-      
-      if (permission === 'granted') {
-        toast({
-          title: "Benachrichtigungen aktiviert",
-          description: "Sie erhalten jetzt Push-Benachrichtigungen für neue Updates.",
-        });
-      } else {
-        toast({
-          title: "Benachrichtigungen deaktiviert",
-          description: "Sie haben Push-Benachrichtigungen abgelehnt.",
-          variant: "destructive"
-        });
+    // Check if notifications are supported
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      try {
+        const permission = await Notification.requestPermission();
+        setNotificationPermission(permission);
+        
+        if (permission === 'granted') {
+          toast({
+            title: "Benachrichtigungen aktiviert",
+            description: "Sie erhalten jetzt Push-Benachrichtigungen für neue Updates.",
+          });
+        } else {
+          toast({
+            title: "Benachrichtigungen deaktiviert",
+            description: "Sie haben Push-Benachrichtigungen abgelehnt.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error("Fehler beim Anfordern der Benachrichtigungserlaubnis:", error);
       }
+    } else {
+      toast({
+        title: "Benachrichtigungen nicht unterstützt",
+        description: "Ihr Browser unterstützt keine Push-Benachrichtigungen.",
+        variant: "destructive"
+      });
     }
   };
   
@@ -68,7 +84,7 @@ export function NotificationBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="rounded-full h-10 w-10 p-0 relative" onClick={() => {
-          if (Notification.permission === 'default') {
+          if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
             requestNotificationPermission();
           }
         }}>
@@ -142,7 +158,7 @@ export function NotificationBell() {
               className="w-full"
               onClick={requestNotificationPermission}
             >
-              {Notification.permission === 'granted' 
+              {(typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted')
                 ? 'Benachrichtigungen sind aktiviert' 
                 : 'Benachrichtigungen aktivieren'}
             </Button>

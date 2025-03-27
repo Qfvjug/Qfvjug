@@ -1,11 +1,16 @@
-import { 
-  users, type User, type InsertUser,
-  videos, type Video, type InsertVideo,
-  downloads, type Download, type InsertDownload,
-  notifications, type Notification, type InsertNotification,
-  subscribers, type Subscriber, type InsertSubscriber,
-  siteSettings, type SiteSetting, type InsertSiteSetting
+import {
+  User, InsertUser,
+  Video, InsertVideo,
+  Download, InsertDownload,
+  Notification, InsertNotification,
+  Subscriber, InsertSubscriber,
+  SiteSetting, InsertSiteSetting
 } from "@shared/schema";
+
+import { db } from "./db";
+import { eq, desc, asc, and } from "drizzle-orm";
+import * as schema from "@shared/schema";
+import { hash } from "bcrypt";
 
 export interface IStorage {
   // User operations
@@ -51,284 +56,264 @@ export interface IStorage {
   updateSiteSettings(settings: Partial<InsertSiteSetting>): Promise<SiteSetting | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private videos: Map<number, Video>;
-  private downloads: Map<number, Download>;
-  private notifications: Map<number, Notification>;
-  private subscribers: Map<number, Subscriber>;
-  private siteSettings: Map<number, SiteSetting>;
-  
-  private userCounter: number;
-  private videoCounter: number;
-  private downloadCounter: number;
-  private notificationCounter: number;
-  private subscriberCounter: number;
-  private settingsCounter: number;
-
-  constructor() {
-    this.users = new Map();
-    this.videos = new Map();
-    this.downloads = new Map();
-    this.notifications = new Map();
-    this.subscribers = new Map();
-    this.siteSettings = new Map();
-    
-    this.userCounter = 1;
-    this.videoCounter = 1;
-    this.downloadCounter = 1;
-    this.notificationCounter = 1;
-    this.subscriberCounter = 1;
-    this.settingsCounter = 1;
-    
-    // Initialize with admin user
-    this.createUser({
-      username: 'admin',
-      password: 'password',
-      isAdmin: true
-    });
-    
-    // Initialize site settings
-    this.siteSettings.set(1, {
-      id: 1,
-      youtubeChannelId: 'UCXuqSBlHAE6Xw-yeJA0Tunw', // Linus Tech Tips as default
-      featuredVideoId: null,
-      newsTickerItems: ['Welcome to Qfvjug\'s YouTube Channel Website!', 'Check out the latest videos and game downloads', 'Join our Discord community'],
-      lastUpdated: new Date()
-    });
-  }
-
+export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const users = await db.select().from(schema.users).where(eq(schema.users.id, id));
+    return users[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const users = await db.select().from(schema.users).where(eq(schema.users.username, username));
+    return users[0];
   }
 
-  async createUser(userData: InsertUser): Promise<User> {
-    const id = this.userCounter++;
-    const user: User = { 
-      ...userData, 
-      id,
-      createdAt: new Date() 
-    };
-    this.users.set(id, user);
-    return user;
+  async createUser(user: InsertUser): Promise<User> {
+    // Hash password before storing
+    const hashedPassword = await hash(user.password, 10);
+    
+    const result = await db.insert(schema.users).values({
+      ...user,
+      password: hashedPassword,
+      createdAt: new Date()
+    }).returning();
+    
+    return result[0];
   }
-  
+
   // Video operations
   async getAllVideos(): Promise<Video[]> {
-    return Array.from(this.videos.values()).sort((a, b) => 
-      (b.uploadDate?.getTime() || 0) - (a.uploadDate?.getTime() || 0)
-    );
+    return db.select().from(schema.videos).orderBy(desc(schema.videos.createdAt));
   }
-  
+
   async getVideosByCategory(category: string): Promise<Video[]> {
-    return Array.from(this.videos.values())
-      .filter(video => video.category === category)
-      .sort((a, b) => (b.uploadDate?.getTime() || 0) - (a.uploadDate?.getTime() || 0));
+    return db.select().from(schema.videos)
+      .where(eq(schema.videos.category, category))
+      .orderBy(desc(schema.videos.createdAt));
   }
-  
+
   async getVideo(id: number): Promise<Video | undefined> {
-    return this.videos.get(id);
+    const videos = await db.select().from(schema.videos).where(eq(schema.videos.id, id));
+    return videos[0];
   }
-  
-  async createVideo(videoData: InsertVideo): Promise<Video> {
-    const id = this.videoCounter++;
-    const video: Video = {
-      ...videoData,
-      id,
-      createdAt: new Date()
-    };
-    this.videos.set(id, video);
-    return video;
-  }
-  
-  async updateVideo(id: number, videoData: Partial<InsertVideo>): Promise<Video | undefined> {
-    const video = this.videos.get(id);
-    if (!video) return undefined;
-    
-    const updatedVideo: Video = {
-      ...video,
-      ...videoData
-    };
-    
-    this.videos.set(id, updatedVideo);
-    return updatedVideo;
-  }
-  
-  async deleteVideo(id: number): Promise<boolean> {
-    return this.videos.delete(id);
-  }
-  
-  async getFeaturedVideo(): Promise<Video | undefined> {
-    return Array.from(this.videos.values()).find(video => video.isFeatured);
-  }
-  
-  async setFeaturedVideo(id: number): Promise<boolean> {
-    // First, set all videos as not featured
-    for (const video of this.videos.values()) {
-      video.isFeatured = false;
+
+  async createVideo(video: InsertVideo): Promise<Video> {
+    // Make sure only one video can be featured if this one is featured
+    if (video.isFeatured) {
+      await db.update(schema.videos)
+        .set({ isFeatured: false })
+        .where(eq(schema.videos.isFeatured, true));
     }
     
-    // Then set the specified video as featured
-    const video = this.videos.get(id);
-    if (!video) return false;
+    const result = await db.insert(schema.videos).values({
+      ...video,
+      createdAt: new Date()
+    }).returning();
     
-    video.isFeatured = true;
-    this.videos.set(id, video);
-    return true;
+    return result[0];
   }
-  
+
+  async updateVideo(id: number, video: Partial<InsertVideo>): Promise<Video | undefined> {
+    // Make sure only one video can be featured if this one is featured
+    if (video.isFeatured) {
+      await db.update(schema.videos)
+        .set({ isFeatured: false })
+        .where(eq(schema.videos.isFeatured, true));
+    }
+    
+    const result = await db.update(schema.videos)
+      .set(video)
+      .where(eq(schema.videos.id, id))
+      .returning();
+    
+    return result[0];
+  }
+
+  async deleteVideo(id: number): Promise<boolean> {
+    const result = await db.delete(schema.videos)
+      .where(eq(schema.videos.id, id))
+      .returning({ id: schema.videos.id });
+    
+    return result.length > 0;
+  }
+
+  async getFeaturedVideo(): Promise<Video | undefined> {
+    const videos = await db.select().from(schema.videos).where(eq(schema.videos.isFeatured, true));
+    return videos[0];
+  }
+
+  async setFeaturedVideo(id: number): Promise<boolean> {
+    // First, unfeature all videos
+    await db.update(schema.videos)
+      .set({ isFeatured: false })
+      .where(eq(schema.videos.isFeatured, true));
+    
+    // Then feature the specified video
+    const result = await db.update(schema.videos)
+      .set({ isFeatured: true })
+      .where(eq(schema.videos.id, id))
+      .returning();
+    
+    return result.length > 0;
+  }
+
   // Download operations
   async getAllDownloads(): Promise<Download[]> {
-    return Array.from(this.downloads.values()).sort((a, b) => 
-      (b.releaseDate?.getTime() || 0) - (a.releaseDate?.getTime() || 0)
-    );
+    return db.select().from(schema.downloads).orderBy(desc(schema.downloads.createdAt));
   }
-  
+
   async getDownloadsByType(type: string): Promise<Download[]> {
-    return Array.from(this.downloads.values())
-      .filter(download => download.type === type)
-      .sort((a, b) => (b.releaseDate?.getTime() || 0) - (a.releaseDate?.getTime() || 0));
+    return db.select().from(schema.downloads)
+      .where(eq(schema.downloads.type, type))
+      .orderBy(desc(schema.downloads.createdAt));
   }
-  
+
   async getDownload(id: number): Promise<Download | undefined> {
-    return this.downloads.get(id);
+    const downloads = await db.select().from(schema.downloads).where(eq(schema.downloads.id, id));
+    return downloads[0];
   }
-  
-  async createDownload(downloadData: InsertDownload): Promise<Download> {
-    const id = this.downloadCounter++;
-    const download: Download = {
-      ...downloadData,
-      id,
+
+  async createDownload(download: InsertDownload): Promise<Download> {
+    const result = await db.insert(schema.downloads).values({
+      ...download,
       downloadCount: 0,
       rating: 0,
       ratingCount: 0,
-      createdAt: new Date()
-    };
-    this.downloads.set(id, download);
-    return download;
-  }
-  
-  async updateDownload(id: number, downloadData: Partial<InsertDownload>): Promise<Download | undefined> {
-    const download = this.downloads.get(id);
-    if (!download) return undefined;
+      createdAt: new Date(),
+      releaseDate: download.releaseDate || new Date()
+    }).returning();
     
-    const updatedDownload: Download = {
-      ...download,
-      ...downloadData
-    };
-    
-    this.downloads.set(id, updatedDownload);
-    return updatedDownload;
+    return result[0];
   }
-  
+
+  async updateDownload(id: number, download: Partial<InsertDownload>): Promise<Download | undefined> {
+    const result = await db.update(schema.downloads)
+      .set(download)
+      .where(eq(schema.downloads.id, id))
+      .returning();
+    
+    return result[0];
+  }
+
   async deleteDownload(id: number): Promise<boolean> {
-    return this.downloads.delete(id);
+    const result = await db.delete(schema.downloads)
+      .where(eq(schema.downloads.id, id))
+      .returning({ id: schema.downloads.id });
+    
+    return result.length > 0;
   }
-  
+
   async incrementDownloadCount(id: number): Promise<number> {
-    const download = this.downloads.get(id);
+    const download = await this.getDownload(id);
     if (!download) return 0;
     
-    download.downloadCount += 1;
-    this.downloads.set(id, download);
-    return download.downloadCount;
+    const result = await db.update(schema.downloads)
+      .set({ downloadCount: download.downloadCount + 1 })
+      .where(eq(schema.downloads.id, id))
+      .returning();
+    
+    return result[0].downloadCount;
   }
-  
+
   // Notification operations
   async getAllNotifications(): Promise<Notification[]> {
-    return Array.from(this.notifications.values()).sort((a, b) => 
-      (b.createdAt.getTime()) - (a.createdAt.getTime())
-    );
+    return db.select().from(schema.notifications).orderBy(desc(schema.notifications.createdAt));
   }
-  
+
   async getNotification(id: number): Promise<Notification | undefined> {
-    return this.notifications.get(id);
+    const notifications = await db.select().from(schema.notifications).where(eq(schema.notifications.id, id));
+    return notifications[0];
   }
-  
-  async createNotification(notificationData: InsertNotification): Promise<Notification> {
-    const id = this.notificationCounter++;
-    const notification: Notification = {
-      ...notificationData,
-      id,
-      read: false,
-      createdAt: new Date()
-    };
-    this.notifications.set(id, notification);
-    return notification;
-  }
-  
-  async markNotificationAsRead(id: number): Promise<boolean> {
-    const notification = this.notifications.get(id);
-    if (!notification) return false;
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const result = await db.insert(schema.notifications).values({
+      ...notification,
+      createdAt: new Date(),
+      read: false
+    }).returning();
     
-    notification.read = true;
-    this.notifications.set(id, notification);
-    return true;
+    return result[0];
   }
-  
+
+  async markNotificationAsRead(id: number): Promise<boolean> {
+    const result = await db.update(schema.notifications)
+      .set({ read: true })
+      .where(eq(schema.notifications.id, id))
+      .returning();
+    
+    return result.length > 0;
+  }
+
   async deleteNotification(id: number): Promise<boolean> {
-    return this.notifications.delete(id);
+    const result = await db.delete(schema.notifications)
+      .where(eq(schema.notifications.id, id))
+      .returning({ id: schema.notifications.id });
+    
+    return result.length > 0;
   }
-  
+
   // Subscriber operations
   async getAllSubscribers(): Promise<Subscriber[]> {
-    return Array.from(this.subscribers.values());
+    return db.select().from(schema.subscribers).orderBy(desc(schema.subscribers.createdAt));
   }
-  
+
   async getSubscriber(id: number): Promise<Subscriber | undefined> {
-    return this.subscribers.get(id);
+    const subscribers = await db.select().from(schema.subscribers).where(eq(schema.subscribers.id, id));
+    return subscribers[0];
   }
-  
+
   async getSubscriberByEmail(email: string): Promise<Subscriber | undefined> {
-    return Array.from(this.subscribers.values()).find(
-      (subscriber) => subscriber.email === email,
-    );
+    const subscribers = await db.select().from(schema.subscribers).where(eq(schema.subscribers.email, email));
+    return subscribers[0];
   }
-  
-  async createSubscriber(subscriberData: InsertSubscriber): Promise<Subscriber> {
-    const id = this.subscriberCounter++;
-    const subscriber: Subscriber = {
-      ...subscriberData,
-      id,
+
+  async createSubscriber(subscriber: InsertSubscriber): Promise<Subscriber> {
+    const result = await db.insert(schema.subscribers).values({
+      ...subscriber,
       createdAt: new Date()
-    };
-    this.subscribers.set(id, subscriber);
-    return subscriber;
+    }).returning();
+    
+    return result[0];
   }
-  
+
   async deleteSubscriber(id: number): Promise<boolean> {
-    return this.subscribers.delete(id);
+    const result = await db.delete(schema.subscribers)
+      .where(eq(schema.subscribers.id, id))
+      .returning({ id: schema.subscribers.id });
+    
+    return result.length > 0;
   }
-  
+
   // Site settings operations
   async getSiteSettings(): Promise<SiteSetting | undefined> {
-    return this.siteSettings.get(1);
+    const settings = await db.select().from(schema.siteSettings);
+    return settings[0];
   }
-  
-  async updateSiteSettings(settingsData: Partial<InsertSiteSetting>): Promise<SiteSetting | undefined> {
-    const settings = this.siteSettings.get(1);
-    if (!settings) return undefined;
+
+  async updateSiteSettings(settings: Partial<InsertSiteSetting>): Promise<SiteSetting | undefined> {
+    const existingSettings = await this.getSiteSettings();
     
-    const updatedSettings: SiteSetting = {
-      ...settings,
-      ...settingsData,
-      lastUpdated: new Date()
-    };
-    
-    this.siteSettings.set(1, updatedSettings);
-    return updatedSettings;
+    if (existingSettings) {
+      const result = await db.update(schema.siteSettings)
+        .set({
+          ...settings,
+          lastUpdated: new Date()
+        })
+        .where(eq(schema.siteSettings.id, existingSettings.id))
+        .returning();
+      
+      return result[0];
+    } else {
+      const result = await db.insert(schema.siteSettings).values({
+        youtubeChannelId: settings.youtubeChannelId || null,
+        featuredVideoId: settings.featuredVideoId || null,
+        newsTickerItems: settings.newsTickerItems || [],
+        lastUpdated: new Date()
+      }).returning();
+      
+      return result[0];
+    }
   }
 }
 
-// Import the database storage implementation
-import { DbStorage } from "./dbStorage";
-
-// Use database storage instead of memory storage
-export const storage = new DbStorage();
+export const storage = new DatabaseStorage();

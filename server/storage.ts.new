@@ -7,13 +7,56 @@ import {
   SiteSetting, InsertSiteSetting
 } from "@shared/schema";
 
-import { IStorage } from "./storage";
 import { db } from "./db";
 import { eq, desc, asc, and } from "drizzle-orm";
 import * as schema from "@shared/schema";
 import { hash } from "bcrypt";
 
-export class DbStorage implements IStorage {
+export interface IStorage {
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
+  // Video operations
+  getAllVideos(): Promise<Video[]>;
+  getVideosByCategory(category: string): Promise<Video[]>;
+  getVideo(id: number): Promise<Video | undefined>;
+  createVideo(video: InsertVideo): Promise<Video>;
+  updateVideo(id: number, video: Partial<InsertVideo>): Promise<Video | undefined>;
+  deleteVideo(id: number): Promise<boolean>;
+  getFeaturedVideo(): Promise<Video | undefined>;
+  setFeaturedVideo(id: number): Promise<boolean>;
+  
+  // Download operations
+  getAllDownloads(): Promise<Download[]>;
+  getDownloadsByType(type: string): Promise<Download[]>;
+  getDownload(id: number): Promise<Download | undefined>;
+  createDownload(download: InsertDownload): Promise<Download>;
+  updateDownload(id: number, download: Partial<InsertDownload>): Promise<Download | undefined>;
+  deleteDownload(id: number): Promise<boolean>;
+  incrementDownloadCount(id: number): Promise<number>;
+  
+  // Notification operations
+  getAllNotifications(): Promise<Notification[]>;
+  getNotification(id: number): Promise<Notification | undefined>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(id: number): Promise<boolean>;
+  deleteNotification(id: number): Promise<boolean>;
+  
+  // Subscriber operations
+  getAllSubscribers(): Promise<Subscriber[]>;
+  getSubscriber(id: number): Promise<Subscriber | undefined>;
+  getSubscriberByEmail(email: string): Promise<Subscriber | undefined>;
+  createSubscriber(subscriber: InsertSubscriber): Promise<Subscriber>;
+  deleteSubscriber(id: number): Promise<boolean>;
+  
+  // Site settings operations
+  getSiteSettings(): Promise<SiteSetting | undefined>;
+  updateSiteSettings(settings: Partial<InsertSiteSetting>): Promise<SiteSetting | undefined>;
+}
+
+export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const users = await db.select().from(schema.users).where(eq(schema.users.id, id));
@@ -272,3 +315,5 @@ export class DbStorage implements IStorage {
     }
   }
 }
+
+export const storage = new DatabaseStorage();
