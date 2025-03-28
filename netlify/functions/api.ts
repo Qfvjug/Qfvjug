@@ -4,8 +4,7 @@ import cors from 'cors';
 import { registerRoutes } from '../../server/routes';
 import dotenv from 'dotenv';
 
-// Import our custom implementation of Vite for Netlify Functions
-// Diese Implementierung vermeidet Top-Level-Await
+// Markiere diese Umgebung als Netlify
 process.env.NETLIFY = 'true';
 
 // Umgebungsvariablen laden

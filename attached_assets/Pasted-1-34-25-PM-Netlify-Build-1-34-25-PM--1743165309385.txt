@@ -1,0 +1,156 @@
+1:34:25 PM: Netlify Build                                                 
+1:34:25 PM: ────────────────────────────────────────────────────────────────
+1:34:25 PM: ​
+1:34:25 PM: ❯ Version
+1:34:25 PM:   @netlify/build 30.0.6
+1:34:25 PM: ​
+1:34:25 PM: ❯ Flags
+1:34:25 PM:   accountId: 673d998ce2332450473d26c8
+1:34:25 PM:   baseRelDir: true
+1:34:25 PM:   buildId: 67e6972d781fa11327502fdf
+1:34:25 PM:   deployId: 67e6972d781fa11327502fe1
+1:34:25 PM: ​
+1:34:25 PM: ❯ Current directory
+1:34:25 PM:   /opt/build/repo
+1:34:25 PM: ​
+1:34:25 PM: ❯ Config file
+1:34:25 PM:   /opt/build/repo/netlify.toml
+1:34:25 PM: ​
+1:34:25 PM: ❯ Context
+1:34:25 PM:   production
+1:34:25 PM: ​
+1:34:25 PM: build.command from netlify.toml                               
+1:34:25 PM: ────────────────────────────────────────────────────────────────
+1:34:25 PM: ​
+1:34:25 PM: $ chmod +x ./build-netlify.sh && ./build-netlify.sh
+1:34:25 PM: Building frontend with Vite...
+1:34:25 PM: > rest-express@1.0.0 build
+1:34:25 PM: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+1:34:25 PM: vite v5.4.14 building for production...
+1:34:25 PM: transforming...
+1:34:28 PM: ✓ 1769 modules transformed.
+1:34:28 PM: rendering chunks...
+1:34:28 PM: computing gzip size...
+1:34:28 PM: ../dist/public/index.html                          2.68 kB │ gzip:   1.15 kB
+1:34:28 PM: ../dist/public/assets/index-D87Tp3NR.css          66.46 kB │ gzip:  11.52 kB
+1:34:28 PM: ../dist/public/assets/skeleton-C1SddeMC.js         0.17 kB │ gzip:   0.16 kB
+1:34:28 PM: ../dist/public/assets/chevron-down-CKW2Zj8r.js     0.30 kB │ gzip:   0.24 kB
+1:34:28 PM: ../dist/public/assets/search-C6sE5YQW.js           0.34 kB │ gzip:   0.27 kB
+1:34:28 PM: ../dist/public/assets/download-h6K1V1x8.js         0.43 kB │ gzip:   0.32 kB
+1:34:28 PM: ../dist/public/assets/youtube-VKrFxN_X.js          0.74 kB │ gzip:   0.36 kB
+1:34:28 PM: ../dist/public/assets/VideosPage-Srqyzkjp.js       2.15 kB │ gzip:   0.89 kB
+1:34:28 PM: ../dist/public/assets/VideoCard-CwUG88fh.js        3.13 kB │ gzip:   1.36 kB
+1:34:28 PM: ../dist/public/assets/Login-B8GRoh-V.js            3.18 kB │ gzip:   1.47 kB
+1:34:28 PM: ../dist/public/assets/DownloadsPage-Bc7zm69O.js    5.54 kB │ gzip:   2.06 kB
+1:34:28 PM: ../dist/public/assets/HomePage-CqKKst4c.js        19.95 kB │ gzip:   5.97 kB
+1:34:28 PM: ../dist/public/assets/form-DOOY15Eu.js            88.87 kB │ gzip:  25.60 kB
+1:34:28 PM: ../dist/public/assets/AdminPanel-ClthCMxv.js      93.17 kB │ gzip:  24.52 kB
+1:34:28 PM: ../dist/public/assets/index-JgQbEMyq.js          321.43 kB │ gzip: 104.74 kB
+1:34:28 PM: ✓ built in 3.24s
+1:34:28 PM:   dist/index.js  67.4kb
+1:34:28 PM: ⚡ Done in 15ms
+1:34:28 PM: Building Netlify functions...
+1:34:29 PM: ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+1:34:29 PM:     server/vite.ts:6:33:
+1:34:29 PM:       6 │ const __filename = fileURLToPath(import.meta.url);
+1:34:29 PM:         ╵                                  ~~~~~~~~~~~
+1:34:29 PM:   You need to set the output format to "esm" for "import.meta" to work correctly.
+1:34:29 PM: ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+1:34:29 PM:     vite.config.ts:8:33:
+1:34:29 PM:       8 │ const __filename = fileURLToPath(import.meta.url);
+1:34:29 PM:         ╵                                  ~~~~~~~~~~~
+1:34:29 PM:   You need to set the output format to "esm" for "import.meta" to work correctly.
+1:34:29 PM: ✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+1:34:29 PM:     vite.config.ts:19:10:
+1:34:29 PM:       19 │           await import("@replit/vite-plugin-cartographer").then((m...
+1:34:29 PM:          ╵           ~~~~~
+1:34:29 PM: 2 warnings and 1 error
+1:34:29 PM:   netlify/functions/netlify-vite.js  1.6kb
+1:34:29 PM: ⚡ Done in 2ms
+1:34:29 PM: Build completed successfully!
+1:34:29 PM: ​
+1:34:29 PM: (build.command completed in 4.3s)
+1:34:29 PM: ​
+1:34:29 PM: Functions bundling                                            
+1:34:29 PM: ────────────────────────────────────────────────────────────────
+1:34:29 PM: ​
+1:34:29 PM: Packaging Functions from netlify/functions directory:
+1:34:29 PM:  - api.ts
+1:34:29 PM:  - netlify-vite.ts
+1:34:29 PM:  - netlify-vite.js
+1:34:29 PM: ​
+1:34:29 PM: ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+1:34:29 PM:     server/vite.ts:6:33:
+1:34:29 PM:       6 │ const __filename = fileURLToPath(import.meta.url);
+1:34:29 PM:         ╵                                  ~~~~~~~~~~~
+1:34:29 PM:   You need to set the output format to "esm" for "import.meta" to work correctly.
+1:34:29 PM: ▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+1:34:29 PM:     netlify/functions/netlify-vite.js:27:0:
+1:34:29 PM:       27 │ module.exports = __toCommonJS(netlify_vite_exports);
+1:34:29 PM:          ╵ ~~~~~~
+1:34:29 PM:   This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+1:34:29 PM:     package.json:4:10:
+1:34:29 PM:       4 │   "type": "module",
+1:34:29 PM:         ╵           ~~~~~~~~
+1:34:29 PM:   Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+1:34:29 PM: ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+1:34:29 PM:     vite.config.ts:8:33:
+1:34:29 PM:       8 │ const __filename = fileURLToPath(import.meta.url);
+1:34:29 PM:         ╵                                  ~~~~~~~~~~~
+1:34:29 PM:   You need to set the output format to "esm" for "import.meta" to work correctly.
+1:34:29 PM: ✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+1:34:29 PM:     vite.config.ts:19:10:
+1:34:29 PM:       19 │           await import("@replit/vite-plugin-cartographer").then((m...
+1:34:29 PM:          ╵           ~~~~~
+1:34:29 PM: ▲ [WARNING] "esbuild" should be marked as external for use with "require.resolve" [require-resolve-not-external]
+1:34:29 PM:     node_modules/vite/node_modules/esbuild/lib/main.js:1653:36:
+1:34:29 PM:       1653 │   const libMainJS = require.resolve("esbuild");
+1:34:29 PM:            ╵                                     ~~~~~~~~~
+1:34:30 PM: ✘ [ERROR] Could not resolve "@babel/preset-typescript/package.json"
+1:34:30 PM:     node_modules/@babel/core/lib/config/files/module-types.js:151:40:
+1:34:30 PM:       151 │ ...t packageJson = require("@babel/preset-typescript/package.json");
+1:34:30 PM:           ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1:34:30 PM:   You can mark the path "@babel/preset-typescript/package.json" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle. You can also surround this "require" call with a try/catch block to handle this failure at run-time instead of bundle-time.
+1:34:30 PM: ✘ [ERROR] Could not resolve "lightningcss"
+1:34:30 PM:     node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:37952:59:
+1:34:30 PM:       37952 │ ...ightningCSS = createCachedImport(() => import('lightningcss'));
+1:34:30 PM:             ╵                                                  ~~~~~~~~~~~~~~
+1:34:30 PM:   You can mark the path "lightningcss" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle. You can also add ".catch()" here to handle this failure at run-time instead of bundle-time.
+1:34:30 PM: ​
+1:34:30 PM: Dependencies installation error                               
+1:34:30 PM: ────────────────────────────────────────────────────────────────
+1:34:30 PM: ​
+1:34:30 PM:   Error message
+1:34:30 PM:   A Netlify Function failed to require one of its dependencies.
+1:34:30 PM:   Please make sure it is present in the site's top-level "package.json".
+​
+1:34:30 PM:   Build failed with 3 errors:
+1:34:30 PM:   node_modules/@babel/core/lib/config/files/module-types.js:151:40: ERROR: Could not resolve "@babel/preset-typescript/package.json"
+1:34:30 PM:   node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:37952:59: ERROR: Could not resolve "lightningcss"
+1:34:30 PM:   vite.config.ts:19:10: ERROR: Top-level await is currently not supported with the "cjs" output format
+1:34:30 PM: ​
+1:34:30 PM:   Resolved config
+1:34:30 PM:   build:
+1:34:30 PM:     command: chmod +x ./build-netlify.sh && ./build-netlify.sh
+1:34:30 PM:     commandOrigin: config
+1:34:30 PM:     environment:
+1:34:30 PM:       - FIREBASE_CLIENT_EMAIL
+1:34:30 PM:       - FIREBASE_PRIVATE_KEY
+1:34:30 PM:       - FIREBASE_PROJECT_ID
+1:34:30 PM:       - YOUTUBE_API_KEY
+1:34:30 PM:       - YOUTUBE_CHANNEL_ID
+1:34:30 PM:     publish: /opt/build/repo/dist
+1:34:30 PM:     publishOrigin: config
+1:34:30 PM:   functionsDirectory: /opt/build/repo/netlify/functions
+1:34:30 PM:   redirects:
+1:34:31 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+1:34:31 PM:     - from: /api/*
+      status: 200
+      to: /.netlify/functions/api/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+1:34:31 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+1:34:31 PM: Failing build: Failed to build site
+1:34:31 PM: Finished processing build request in 31.507s

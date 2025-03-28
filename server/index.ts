@@ -5,28 +5,51 @@ import { memStorage } from "./memory-storage";
 import { storage as firebaseStorage } from "./firebase-storage";
 
 // Vite-Funktionen dynamisch importieren
-import * as netlifyViteModule from '../netlify/functions/netlify-vite';
+// In der Produktionsumgebung (Netlify) wird netlify-vite.mjs verwendet
+// In der Entwicklungsumgebung (Replit) wird vite.ts verwendet
 import * as standardViteModule from './vite';
+
+// Wir laden das Netlify-Modul nur, wenn wir in der Netlify-Umgebung sind
+let netlifyViteModule: any = null;
+
+// Eine Hilfsfunktion zum Laden des Netlify-Moduls
+async function loadNetlifyModule() {
+  if (process.env.NETLIFY === 'true') {
+    try {
+      // Dynamischer Import für Produktionsumgebung
+      const importPath = '../netlify/functions/netlify-vite';
+      netlifyViteModule = await import(importPath);
+    } catch (error) {
+      console.error('Failed to import netlify-vite module:', error);
+      // Fallback auf Standard-Vite-Implementierung
+    }
+  }
+}
 
 // Setup-Funktionen basierend auf der Umgebung definieren
 let setupVite: any, serveStatic: any, log: any;
 
-if (process.env.NETLIFY === 'true') {
-  // Netlify-spezifische Implementierung verwenden
-  setupVite = netlifyViteModule.setupVite;
-  serveStatic = netlifyViteModule.serveStatic;
-  log = netlifyViteModule.log;
-} else {
-  // Standard-Vite-Implementierung verwenden
-  setupVite = standardViteModule.setupVite;
-  serveStatic = standardViteModule.serveStatic;
-  log = standardViteModule.log;
+// Wir initialisieren die Funktionen in einer asynchronen Funktion
+async function initializeViteFunctions() {
+  // Erst das Netlify-Modul laden, wenn nötig
+  if (process.env.NETLIFY === 'true') {
+    await loadNetlifyModule();
+  }
+  
+  if (process.env.NETLIFY === 'true' && netlifyViteModule) {
+    // Netlify-spezifische Implementierung verwenden
+    setupVite = netlifyViteModule.setupVite;
+    serveStatic = netlifyViteModule.serveStatic;
+    log = netlifyViteModule.log;
+  } else {
+    // Standard-Vite-Implementierung verwenden
+    setupVite = standardViteModule.setupVite;
+    serveStatic = standardViteModule.serveStatic;
+    log = standardViteModule.log;
+  }
 }
 
-// Fallback für log-Funktion
-if (!log) {
-  log = (message: string, _source?: string) => console.log(message);
-}
+// Fallback für log-Funktion wird jetzt in der asynchronen IIFE nach initializeViteFunctions() gesetzt
 
 // Express-App initialisieren
 const app = express();
@@ -72,6 +95,14 @@ let useMemoryStorage = false;
 export let activeStorage = firebaseStorage;
 
 (async () => {
+  // Vite-Funktionen initialisieren
+  await initializeViteFunctions();
+  
+  // Fallback für log-Funktion nach Initialisierung
+  if (!log) {
+    log = (message: string, _source?: string) => console.log(message);
+  }
+  
   // Firebase initialisieren
   try {
     log('Initializing Firebase...', 'server');
