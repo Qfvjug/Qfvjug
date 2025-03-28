@@ -41,8 +41,15 @@ const authenticateAdmin = asyncHandler(async (req: Request, res: Response, next:
   next();
 });
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  const httpServer = createServer(app);
+export async function registerRoutes(app: Express): Promise<Server | null> {
+  // In der Netlify-Umgebung brauchen wir keinen HTTP-Server
+  // da Netlify Functions serverless sind
+  let httpServer: Server | null = null;
+  
+  // Nur in der lokalen Entwicklungsumgebung einen HTTP-Server erstellen
+  if (process.env.NODE_ENV !== 'production') {
+    httpServer = createServer(app);
+  }
 
   // --- Auth Routes ---
   app.post('/api/auth/login', asyncHandler(async (req: Request, res: Response) => {
@@ -695,6 +702,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to convert link', error: (error as Error).message });
     }
   }));
+
+  // WebSocket-Server nur in der lokalen Entwicklungsumgebung initialisieren
+  if (process.env.NODE_ENV !== 'production' && httpServer) {
+    // WebSocket-Initialisierung würde hier stattfinden
+  }
 
   return httpServer;
 }

@@ -1,37 +1,30 @@
 import express, { Request, Response, NextFunction } from 'express';
 import serverless from 'serverless-http';
-import { registerRoutes } from '../../server/routes';
-import { runMigrations } from '../../server/db';
 import cors from 'cors';
+import { registerRoutes } from '../../server/routes';
+import dotenv from 'dotenv';
 
+// Umgebungsvariablen laden
+dotenv.config();
+
+// Express-App initialisieren
 const app = express();
 
-// Middleware
-app.use(express.json());
+// Middleware konfigurieren
 app.use(cors());
+app.use(express.json());
 
-// Error handling middleware
+// API Fehlerhandler
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: 'Ein Fehler ist aufgetreten',
+  console.error('API Error:', err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || 'Ein interner Serverfehler ist aufgetreten',
     error: process.env.NODE_ENV === 'production' ? {} : err
   });
 });
 
-// Setup database
-(async () => {
-  try {
-    console.log('Running database migrations...');
-    await runMigrations();
-    console.log('Database setup complete');
-  } catch (error) {
-    console.error('Database setup failed:', error);
-  }
-})();
-
-// Register API routes
+// Routen registrieren (ohne Websocket-Server in Netlify Functions)
 registerRoutes(app);
 
-// This exports the handler function used by Netlify Functions
+// Serverless-Handler für Netlify Functions exportieren
 export const handler = serverless(app);
