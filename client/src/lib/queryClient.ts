@@ -8,9 +8,10 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
-// Fügt API-Basispfad zur URL hinzu, wenn URL mit / beginnt
+// Fügt API-Basispfad zur URL hinzu, wenn URL mit /api/ beginnt
 function getFullUrl(url: string): string {
   if (url.startsWith('/api/')) {
+    // Im Entwicklungsmodus bleibt die URL unverändert, in Produktion wird der API_BASE_URL vorangestellt
     return `${API_BASE_URL}${url}`;
   }
   return url;

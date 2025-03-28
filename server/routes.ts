@@ -18,8 +18,11 @@ import {
 import { compare, hash } from "bcrypt";
 
 // Simple middleware for handling async route handlers
-const asyncHandler = (fn: Function) => (req: Request, res: Response, next: Function) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
+// Handler für asynchrone Routen
+const asyncHandler = <T extends Request = Request, U extends Response = Response>(
+  fn: (req: T, res: U, next: Function) => Promise<any>
+) => (req: T, res: U, next: Function) => {
+  Promise.resolve(fn(req, res, next)).catch((error) => next(error));
 };
 
 // Authentication middleware

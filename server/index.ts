@@ -1,10 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-// Firebase anstelle von PostgreSQL verwenden
+// Importiere Speicher-Implementierungen
 import { initializeFirebase } from "./firebase";
 import { memStorage } from "./memory-storage";
 import { storage as firebaseStorage } from "./firebase-storage";
+import { storage as dbStorage } from "./storage";
+import { runMigrations } from "./db";
 
 const app = express();
 app.use(express.json());
@@ -40,38 +42,54 @@ app.use((req, res, next) => {
   next();
 });
 
-// Flag für die Verwendung von MemStorage als Fallback
-let useMemoryStorage = false;
+// Flag für die Verwendung von verschiedenen Storage-Implementierungen
+let storageType = 'database'; // Standard: PostgreSQL Datenbank
+let useMemoryStorage = false; // Fallback: In-Memory Storage
 
 // Wir erstellen eine globale Variable, die das storage exportiert, welches verwendet werden soll
-export let activeStorage = firebaseStorage;
+export let activeStorage = dbStorage;
 
 (async () => {
-  // Firebase initialisieren oder Fallback zu MemStorage verwenden
+  // Zuerst versuchen, die PostgreSQL-Datenbank zu verwenden
   try {
-    await initializeFirebase();
-    log('Firebase initialization completed successfully', 'server');
-    activeStorage = firebaseStorage;
-  } catch (error) {
-    log(`Firebase initialization failed, switching to memory storage: ${(error as Error).message}`, 'server');
-    useMemoryStorage = true;
-    activeStorage = memStorage;
+    log('Initializing PostgreSQL database...', 'server');
+    await runMigrations();
+    log('PostgreSQL database initialized successfully', 'server');
+    activeStorage = dbStorage;
+    storageType = 'database';
+  } catch (dbError) {
+    log(`PostgreSQL initialization failed, trying Firebase: ${(dbError as Error).message}`, 'server');
     
-    // Admin-Benutzer für das Memory-Storage erstellen
+    // Als Fallback versuchen, Firebase zu initialisieren
     try {
-      const existingUser = await memStorage.getUserByUsername('admin');
-      if (!existingUser) {
-        log('Creating default admin user for memory storage', 'server');
-        await memStorage.createUser({
-          username: 'admin',
-          password: 'admin123',
-          isAdmin: true
-        });
+      await initializeFirebase();
+      log('Firebase initialization completed successfully', 'server');
+      activeStorage = firebaseStorage;
+      storageType = 'firebase';
+    } catch (firebaseError) {
+      log(`Firebase initialization failed, switching to memory storage: ${(firebaseError as Error).message}`, 'server');
+      useMemoryStorage = true;
+      activeStorage = memStorage;
+      storageType = 'memory';
+      
+      // Admin-Benutzer für das Memory-Storage erstellen
+      try {
+        const existingUser = await memStorage.getUserByUsername('admin');
+        if (!existingUser) {
+          log('Creating default admin user for memory storage', 'server');
+          await memStorage.createUser({
+            username: 'admin',
+            password: 'admin123',
+            isAdmin: true
+          });
+        }
+      } catch (e) {
+        log(`Error creating default admin user: ${(e as Error).message}`, 'server');
       }
-    } catch (e) {
-      log(`Error creating default admin user: ${(e as Error).message}`, 'server');
     }
   }
+  
+  log(`Using storage type: ${storageType}`, 'server');
   
   const server = await registerRoutes(app);
 
