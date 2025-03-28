@@ -101,24 +101,31 @@ export let activeStorage = dbStorage;
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Vite in Entwicklungsumgebung einrichten oder statische Dateien in Produktion
+  // Einrichtung nur nach allen anderen Routen erfolgen, damit die Catch-All-Route
+  // nicht mit anderen Routen in Konflikt gerät
+  if (app.get("env") === "development" && server) {
     await setupVite(app, server);
-  } else {
+  } else if (process.env.NODE_ENV !== 'production') {
+    // Im Netlify-Kontext müssen wir keine statischen Dateien bereitstellen
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  // Nur in Nicht-Produktionsumgebung (lokale Entwicklung) den Server starten
+  // In Netlify Functions benötigen wir keinen HTTP-Server
+  if (process.env.NODE_ENV !== 'production') {
+    // ALWAYS serve the app on port 5000
+    // this serves both the API and the client.
+    // It is the only port that is not firewalled.
+    const port = 5000;
+    if (server) {
+      server.listen({
+        port,
+        host: "0.0.0.0",
+        reusePort: true,
+      }, () => {
+        log(`serving on port ${port}`);
+      });
+    }
+  }
 })();

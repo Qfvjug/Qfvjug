@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -74,6 +75,27 @@ export const comments = pgTable("comments", {
   approved: boolean("approved").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// Define relations
+export const videoRelations = relations(videos, ({ many }) => ({
+  comments: many(comments),
+}));
+
+export const commentRelations = relations(comments, ({ one }) => ({
+  video: one(videos, {
+    fields: [comments.videoId],
+    references: [videos.id],
+  }),
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+    relationName: "userComments",
+  }),
+}));
+
+export const userRelations = relations(users, ({ many }) => ({
+  comments: many(comments, { relationName: "userComments" }),
+}));
 
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users).pick({

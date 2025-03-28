@@ -53,6 +53,9 @@ export async function registerRoutes(app: Express): Promise<Server | null> {
   if (process.env.NODE_ENV !== 'production') {
     httpServer = createServer(app);
   }
+  
+  // In Netlify-Umgebung können wir die Routen ohne WebSocket-Integration registrieren
+  const isNetlify = process.env.NETLIFY === 'true';
 
   // --- Auth Routes ---
   app.post('/api/auth/login', asyncHandler(async (req: Request, res: Response) => {
@@ -707,8 +710,10 @@ export async function registerRoutes(app: Express): Promise<Server | null> {
   }));
 
   // WebSocket-Server nur in der lokalen Entwicklungsumgebung initialisieren
-  if (process.env.NODE_ENV !== 'production' && httpServer) {
+  // und nur wenn Netlify-Umgebung nicht erkannt wurde
+  if (process.env.NODE_ENV !== 'production' && httpServer && !isNetlify) {
     // WebSocket-Initialisierung würde hier stattfinden
+    console.log('WebSocket server available in development environment');
   }
 
   return httpServer;

@@ -39,7 +39,7 @@ Die Datei `netlify.toml` ist bereits konfiguriert, um alle API-Anfragen zu den N
 
 ## Wichtige Hinweise
 
-- Die Webseite nutzt Firebase als primären Speicher, mit einem Memory-Fallback wenn Firebase nicht verfügbar ist.
+- Die Webseite nutzt PostgreSQL als primären Speicher, mit einem Fallback zu Firebase und einem Memory-Speicher als letzte Option.
 - Bei jedem Deployment wird der Memory-Speicher zurückgesetzt. Um persistenten Speicher zu gewährleisten, stelle sicher, dass Firebase oder die PostgreSQL-Datenbank korrekt konfiguriert sind.
 - Netlify Functions haben ein Zeitlimit von 10 Sekunden. Stelle sicher, dass deine API-Anfragen schnell genug abgeschlossen werden.
 
