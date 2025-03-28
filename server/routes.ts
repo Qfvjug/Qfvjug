@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+// Firebase-Storage anstelle von PostgreSQL-Storage verwenden
+import { storage } from "./firebase-storage";
 import { YouTubeService } from "./services/youtubeService";
 import { QRCodeService } from "./services/qrCodeService";
 import { z } from "zod";
@@ -56,9 +57,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
     
-    // In a real app, use bcrypt.compare to check the password
-    // For simplicity, we'll just compare directly
-    const isPasswordValid = password === user.password;
+    // Benutze bcrypt.compare zum Überprüfen des Passworts
+    const isPasswordValid = await compare(password, user.password);
     
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid username or password' });
