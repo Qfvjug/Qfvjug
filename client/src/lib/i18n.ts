@@ -1,10 +1,23 @@
 // i18n.ts - Internationalization support
 export type Language = 'en' | 'de';
-export type TranslationKey = keyof typeof translations.en;
+
+// Rekursiver Typ für verschachtelte Übersetzungsschlüssel
+type DotPrefix<T extends string> = T extends '' ? '' : `.${T}`;
+type DotNestedKeys<T> = (T extends object ?
+  { [K in Exclude<keyof T, symbol>]: `${K}${DotPrefix<DotNestedKeys<T[K]>>}` }[Exclude<keyof T, symbol>]
+  : '') extends infer D ? Extract<D, string> : never;
+
+export type TranslationKey = keyof typeof translations.en | DotNestedKeys<typeof translations.en>;
 
 // Define all translations here
 export const translations = {
   en: {
+    // Common
+    loading: 'Loading...',
+    success: 'Success',
+    error: 'Error',
+    info: 'Information',
+    
     // Header
     home: 'Home',
     videos: 'Videos',
@@ -60,8 +73,29 @@ export const translations = {
     livestreamId: 'Livestream ID',
     save: 'Save',
     settingsSaved: 'Settings saved successfully',
+    
+    // Link Converter
+    linkConverter: {
+      title: 'OneDrive Link Converter',
+      description: 'Convert OneDrive sharing links to direct download links',
+      enterLink: 'Enter OneDrive link here',
+      convert: 'Convert Link',
+      convertedLink: 'Converted Link',
+      copyToClipboard: 'Copy to Clipboard',
+      pleaseEnterLink: 'Please enter a link to convert',
+      linkConverted: 'Link successfully converted',
+      linkUnchanged: 'Link was not changed (not a convertible link type)',
+      conversionError: 'Error converting link',
+      linkCopied: 'Link copied to clipboard',
+    },
   },
   de: {
+    // Common
+    loading: 'Lädt...',
+    success: 'Erfolg',
+    error: 'Fehler',
+    info: 'Information',
+    
     // Header
     home: 'Startseite',
     videos: 'Videos',
@@ -117,6 +151,21 @@ export const translations = {
     livestreamId: 'Livestream-ID',
     save: 'Speichern',
     settingsSaved: 'Einstellungen erfolgreich gespeichert',
+    
+    // Link Converter
+    linkConverter: {
+      title: 'OneDrive Link-Konverter',
+      description: 'Konvertiere OneDrive-Freigabelinks in direkte Download-Links',
+      enterLink: 'OneDrive-Link hier eingeben',
+      convert: 'Link konvertieren',
+      convertedLink: 'Konvertierter Link',
+      copyToClipboard: 'In die Zwischenablage kopieren',
+      pleaseEnterLink: 'Bitte gib einen Link zum Konvertieren ein',
+      linkConverted: 'Link erfolgreich konvertiert',
+      linkUnchanged: 'Link wurde nicht geändert (kein konvertierbarer Link-Typ)',
+      conversionError: 'Fehler beim Konvertieren des Links',
+      linkCopied: 'Link in die Zwischenablage kopiert',
+    },
   }
 };
 
@@ -128,5 +177,25 @@ export function getBrowserLanguage(): Language {
 
 // Translate function
 export function t(key: TranslationKey, language: Language): string {
-  return translations[language][key] || key;
+  // Überprüft, ob der Schlüssel einen Punkt enthält (verschachtelt ist)
+  if (typeof key === 'string' && key.includes('.')) {
+    const parts = key.split('.');
+    let result: any = translations[language];
+    
+    // Durchlauf durch alle Teile des Schlüssels
+    for (const part of parts) {
+      if (result && typeof result === 'object' && part in result) {
+        result = result[part];
+      } else {
+        return key; // Schlüssel nicht gefunden
+      }
+    }
+    
+    return typeof result === 'string' ? result : key;
+  }
+  
+  // Für nicht-verschachtelte Schlüssel
+  return key in translations[language] ? 
+    (translations[language] as any)[key] : 
+    key;
 }

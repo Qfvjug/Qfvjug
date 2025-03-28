@@ -4,6 +4,7 @@ import { createServer, type Server } from "http";
 import { activeStorage as storage } from "./index";
 import { YouTubeService } from "./services/youtubeService";
 import { QRCodeService } from "./services/qrCodeService";
+import { LinkConverterService } from "./services/linkConverterService";
 import { z } from "zod";
 import {
   insertUserSchema,
@@ -261,7 +262,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Invalid download data', errors: validationResult.error.errors });
       }
       
-      const download = await storage.createDownload(validationResult.data);
+      // Automatische Konvertierung des Download-Links, falls es sich um einen OneDrive-Link handelt
+      const downloadData = validationResult.data;
+      if (downloadData.downloadUrl) {
+        downloadData.downloadUrl = LinkConverterService.convertToDirectDownloadLink(downloadData.downloadUrl);
+      }
+      
+      const download = await storage.createDownload(downloadData);
       res.status(201).json(download);
     } catch (error) {
       res.status(500).json({ message: 'Failed to create download', error: (error as Error).message });
@@ -278,7 +285,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Download not found' });
       }
       
-      const updatedDownload = await storage.updateDownload(id, req.body);
+      // Automatische Konvertierung des Download-Links, falls es sich um einen OneDrive-Link handelt
+      const updateData = { ...req.body };
+      if (updateData.downloadUrl) {
+        updateData.downloadUrl = LinkConverterService.convertToDirectDownloadLink(updateData.downloadUrl);
+      }
+      
+      const updatedDownload = await storage.updateDownload(id, updateData);
       res.json(updatedDownload);
     } catch (error) {
       res.status(500).json({ message: 'Failed to update download', error: (error as Error).message });
@@ -659,6 +672,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: 'Failed to update livestream status', error: (error as Error).message });
+    }
+  }));
+  
+  // --- OneDrive Link Converter Route ---
+  app.post('/api/convert-link', asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { url } = req.body;
+      
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ message: 'URL is required and must be a string' });
+      }
+      
+      const convertedUrl = LinkConverterService.convertToDirectDownloadLink(url);
+      
+      res.json({ 
+        originalUrl: url, 
+        convertedUrl: convertedUrl,
+        isConverted: convertedUrl !== url 
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to convert link', error: (error as Error).message });
     }
   }));
 

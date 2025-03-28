@@ -17,21 +17,22 @@ function getFullUrl(url: string): string {
 }
 
 export async function apiRequest(
-  method: string,
   url: string,
-  data?: unknown | undefined,
-): Promise<Response> {
+  options?: RequestInit
+): Promise<any> {
   const fullUrl = getFullUrl(url);
   
   const res = await fetch(fullUrl, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
+    ...options,
     credentials: "include",
+    headers: {
+      ...(options?.headers || {}),
+      ...(options?.body ? { "Content-Type": "application/json" } : {})
+    }
   });
 
   await throwIfResNotOk(res);
-  return res;
+  return res.json();
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

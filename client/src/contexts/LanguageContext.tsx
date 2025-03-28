@@ -38,3 +38,9 @@ export function useLanguage() {
   }
   return context;
 }
+
+// Helper hook to use only the translate function (convenience wrapper)
+export function useTranslation() {
+  const { translate: t } = useLanguage();
+  return { t };
+}
