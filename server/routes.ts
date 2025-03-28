@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-// Firebase-Storage anstelle von PostgreSQL-Storage verwenden
-import { storage } from "./firebase-storage";
+// Dynamischen Storage verwenden
+import { activeStorage as storage } from "./index";
 import { YouTubeService } from "./services/youtubeService";
 import { QRCodeService } from "./services/qrCodeService";
 import { z } from "zod";

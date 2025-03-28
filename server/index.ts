@@ -3,6 +3,8 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 // Firebase anstelle von PostgreSQL verwenden
 import { initializeFirebase } from "./firebase";
+import { memStorage } from "./memory-storage";
+import { storage as firebaseStorage } from "./firebase-storage";
 
 const app = express();
 app.use(express.json());
@@ -38,9 +40,38 @@ app.use((req, res, next) => {
   next();
 });
 
+// Flag für die Verwendung von MemStorage als Fallback
+let useMemoryStorage = false;
+
+// Wir erstellen eine globale Variable, die das storage exportiert, welches verwendet werden soll
+export let activeStorage = firebaseStorage;
+
 (async () => {
-  // Firebase initialisieren
-  await initializeFirebase();
+  // Firebase initialisieren oder Fallback zu MemStorage verwenden
+  try {
+    await initializeFirebase();
+    log('Firebase initialization completed successfully', 'server');
+    activeStorage = firebaseStorage;
+  } catch (error) {
+    log(`Firebase initialization failed, switching to memory storage: ${(error as Error).message}`, 'server');
+    useMemoryStorage = true;
+    activeStorage = memStorage;
+    
+    // Admin-Benutzer für das Memory-Storage erstellen
+    try {
+      const existingUser = await memStorage.getUserByUsername('admin');
+      if (!existingUser) {
+        log('Creating default admin user for memory storage', 'server');
+        await memStorage.createUser({
+          username: 'admin',
+          password: 'admin123',
+          isAdmin: true
+        });
+      }
+    } catch (e) {
+      log(`Error creating default admin user: ${(e as Error).message}`, 'server');
+    }
+  }
   
   const server = await registerRoutes(app);
 
