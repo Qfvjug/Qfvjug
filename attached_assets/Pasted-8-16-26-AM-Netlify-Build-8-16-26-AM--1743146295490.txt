@@ -1,0 +1,105 @@
+8:16:26 AM: Netlify Build                                                 
+8:16:26 AM: ────────────────────────────────────────────────────────────────
+8:16:26 AM: ​
+8:16:26 AM: ❯ Version
+8:16:26 AM:   @netlify/build 30.0.5
+8:16:26 AM: ​
+8:16:26 AM: ❯ Flags
+8:16:26 AM:   accountId: 673d998ce2332450473d26c8
+8:16:26 AM:   baseRelDir: true
+8:16:26 AM:   buildId: 67e64c972d40a6fc49606d53
+8:16:26 AM:   deployId: 67e64c972d40a6fc49606d55
+8:16:26 AM: ​
+8:16:26 AM: Warning: some redirects have syntax errors:
+8:16:26 AM: ​
+8:16:26 AM: Could not parse redirect number 1:
+8:16:26 AM:   {"from":"/.netlify/functions/*","to":"/.netlify/functions/:splat","status":200}
+8:16:26 AM: "path" field must not start with "/.netlify"
+8:16:26 AM: ​
+8:16:26 AM: ❯ Current directory
+8:16:26 AM:   /opt/build/repo
+8:16:26 AM: ​
+8:16:26 AM: ❯ Config file
+8:16:26 AM:   /opt/build/repo/netlify.toml
+8:16:26 AM: ​
+8:16:26 AM: ❯ Context
+8:16:26 AM:   production
+8:16:26 AM: ​
+8:16:26 AM: build.command from netlify.toml                               
+8:16:26 AM: ────────────────────────────────────────────────────────────────
+8:16:26 AM: ​
+8:16:26 AM: $ ./build-netlify.sh
+8:16:27 AM: Building frontend with Vite...
+8:16:27 AM: > rest-express@1.0.0 build
+8:16:27 AM: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+8:16:27 AM: vite v5.4.14 building for production...
+8:16:27 AM: transforming...
+8:16:30 AM: ✓ 1769 modules transformed.
+8:16:31 AM: rendering chunks...
+8:16:31 AM: computing gzip size...
+8:16:31 AM: ../dist/public/index.html                          2.68 kB │ gzip:   1.15 kB
+8:16:31 AM: ../dist/public/assets/index-D87Tp3NR.css          66.46 kB │ gzip:  11.52 kB
+8:16:31 AM: ../dist/public/assets/skeleton-C1SddeMC.js         0.17 kB │ gzip:   0.16 kB
+8:16:31 AM: ../dist/public/assets/chevron-down-CKW2Zj8r.js     0.30 kB │ gzip:   0.24 kB
+8:16:31 AM: ../dist/public/assets/search-C6sE5YQW.js           0.34 kB │ gzip:   0.27 kB
+8:16:31 AM: ../dist/public/assets/download-h6K1V1x8.js         0.43 kB │ gzip:   0.32 kB
+8:16:31 AM: ../dist/public/assets/youtube-VKrFxN_X.js          0.74 kB │ gzip:   0.36 kB
+8:16:31 AM: ../dist/public/assets/VideosPage-Srqyzkjp.js       2.15 kB │ gzip:   0.89 kB
+8:16:31 AM: ../dist/public/assets/VideoCard-CwUG88fh.js        3.13 kB │ gzip:   1.36 kB
+8:16:31 AM: ../dist/public/assets/Login-B8GRoh-V.js            3.18 kB │ gzip:   1.47 kB
+8:16:31 AM: ../dist/public/assets/DownloadsPage-Bc7zm69O.js    5.54 kB │ gzip:   2.06 kB
+8:16:31 AM: ../dist/public/assets/HomePage-CqKKst4c.js        19.95 kB │ gzip:   5.97 kB
+8:16:31 AM: ../dist/public/assets/form-DOOY15Eu.js            88.87 kB │ gzip:  25.60 kB
+8:16:31 AM: ../dist/public/assets/AdminPanel-ClthCMxv.js      93.17 kB │ gzip:  24.52 kB
+8:16:31 AM: ../dist/public/assets/index-JgQbEMyq.js          321.43 kB │ gzip: 104.74 kB
+8:16:31 AM: ✓ built in 3.80s
+8:16:31 AM:   dist/index.js  78.3kb
+8:16:31 AM: ⚡ Done in 7ms
+8:16:31 AM: Building Netlify functions...
+8:16:31 AM:   netlify/functions/api.js  78.9kb
+8:16:31 AM: ⚡ Done in 9ms
+8:16:31 AM: Build completed successfully!
+8:16:31 AM: ​
+8:16:31 AM: (build.command completed in 4.6s)
+8:16:31 AM: ​
+8:16:31 AM: Functions bundling                                            
+8:16:31 AM: ────────────────────────────────────────────────────────────────
+8:16:31 AM: ​
+8:16:31 AM: Packaging Functions from netlify/functions directory:
+8:16:31 AM:  - api.ts
+8:16:31 AM:  - api.js
+8:16:31 AM: ​
+8:16:45 AM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+8:16:43 AM: ✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+8:16:43 AM:     netlify/functions/api.js:40:6:
+8:16:43 AM:       40 │       await import("@replit/vite-plugin-cartographer").then(
+8:16:43 AM:          ╵       ~~~~~
+8:16:43 AM: ​
+8:16:43 AM: Bundling of function "api" failed                             
+8:16:43 AM: ────────────────────────────────────────────────────────────────
+8:16:43 AM: ​
+8:16:43 AM:   Error message
+8:16:43 AM:   Build failed with 1 error:
+8:16:43 AM:   netlify/functions/api.js:40:6: ERROR: Top-level await is currently not supported with the "cjs" output format
+8:16:43 AM: ​
+8:16:43 AM:   Error location
+8:16:43 AM:   While bundling function "api"
+8:16:43 AM: ​
+8:16:43 AM:   Resolved config
+8:16:43 AM:   build:
+8:16:43 AM:     command: ./build-netlify.sh
+8:16:43 AM:     commandOrigin: config
+8:16:43 AM:     publish: /opt/build/repo/dist
+8:16:43 AM:     publishOrigin: config
+8:16:43 AM:   functionsDirectory: /opt/build/repo/netlify/functions
+8:16:43 AM:   redirects:
+8:16:45 AM:     - from: /api/*
+      status: 200
+      to: /.netlify/functions/api/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+8:16:45 AM: Build failed due to a user error: Build script returned non-zero exit code: 2
+8:16:45 AM: Failing build: Failed to build site
+8:16:45 AM: Finished processing build request in 43.993s

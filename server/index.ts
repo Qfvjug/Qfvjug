@@ -1,6 +1,22 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+
+// Dynamically import Vite functions based on environment
+// This helps avoid top-level await issues in Netlify Functions
+let setupVite, serveStatic, log;
+if (process.env.NETLIFY === 'true') {
+  // Use Netlify-specific implementation
+  const netlifyVite = require('../netlify/functions/netlify-vite');
+  setupVite = netlifyVite.setupVite;
+  serveStatic = netlifyVite.serveStatic;
+  log = netlifyVite.log;
+} else {
+  // Use standard Vite implementation
+  const standardVite = require('./vite');
+  setupVite = standardVite.setupVite;
+  serveStatic = standardVite.serveStatic;
+  log = standardVite.log;
+}
 // Importiere Speicher-Implementierungen
 import { initializeFirebase } from "./firebase";
 import { memStorage } from "./memory-storage";

@@ -1,16 +1,13 @@
-import {
-  User, InsertUser,
-  Video, InsertVideo,
-  Download, InsertDownload,
-  Notification, InsertNotification,
-  Subscriber, InsertSubscriber,
-  SiteSetting, InsertSiteSetting,
-  Comment, InsertComment
-} from "@shared/schema";
+import { users, type User, type InsertUser } from "@shared/schema";
+import { videos, type Video, type InsertVideo } from "@shared/schema";
+import { downloads, type Download, type InsertDownload } from "@shared/schema";
+import { notifications, type Notification, type InsertNotification } from "@shared/schema";
+import { subscribers, type Subscriber, type InsertSubscriber } from "@shared/schema";
+import { siteSettings, type SiteSetting, type InsertSiteSetting } from "@shared/schema";
+import { comments, type Comment, type InsertComment } from "@shared/schema";
 
 import { db } from "./db";
-import { eq, desc, asc, and, sql } from "drizzle-orm";
-import * as schema from "@shared/schema";
+import { eq, desc, and } from "drizzle-orm";
 import { hash } from "bcrypt";
 
 export interface IStorage {
@@ -68,20 +65,20 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    const users = await db.select().from(schema.users).where(eq(schema.users.id, id));
-    return users[0];
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const users = await db.select().from(schema.users).where(eq(schema.users.username, username));
-    return users[0];
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
 
   async createUser(user: InsertUser): Promise<User> {
     // Hash password before storing
     const hashedPassword = await hash(user.password, 10);
     
-    const result = await db.insert(schema.users).values({
+    const result = await db.insert(users).values({
       ...user,
       password: hashedPassword,
       createdAt: new Date()

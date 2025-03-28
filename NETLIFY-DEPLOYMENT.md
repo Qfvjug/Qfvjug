@@ -1,53 +1,90 @@
-# Netlify Deployment Anleitung
+# Netlify Deployment Guide
 
-Diese Anleitung beschreibt, wie du die YouTube-Gaming-Channel-Webseite auf Netlify deployen kannst.
+## Overview
 
-## Vorbereitungen
+This document explains how to deploy the YouTube Gaming Channel Website to Netlify. The application uses a serverless architecture with Netlify Functions to handle the backend API.
 
-1. Erstelle ein kostenloses Konto auf [Netlify](https://www.netlify.com/) falls du noch keines hast.
-2. Verknüpfe dein GitHub/GitLab/Bitbucket Repository mit Netlify oder lade das Projekt direkt hoch.
+## Prerequisites
 
-## Umgebungsvariablen einrichten
+- A Netlify account
+- Repository connected to Netlify
 
-Füge folgende Umgebungsvariablen in den Netlify-Einstellungen unter "Site settings" → "Environment variables" hinzu:
+## Environment Variables
 
-- `YOUTUBE_API_KEY`: Dein YouTube API-Schlüssel
-- `YOUTUBE_CHANNEL_ID`: Die YouTube-Kanal-ID
-- `FIREBASE_PROJECT_ID`: Deine Firebase Projekt-ID
-- `FIREBASE_CLIENT_EMAIL`: Die Firebase Client-Email
-- `FIREBASE_PRIVATE_KEY`: Der Firebase Private Key (WICHTIG: Verwende den kompletten Private Key mit `\n` Zeichen)
+The following environment variables must be set in Netlify:
 
-Optional, falls du die PostgreSQL-Datenbank verwendest:
-- `DATABASE_URL`: Die komplette Datenbank-URL
-- `PGUSER`: PostgreSQL Benutzername
-- `PGPASSWORD`: PostgreSQL Passwort
-- `PGDATABASE`: PostgreSQL Datenbankname
-- `PGHOST`: PostgreSQL Host
-- `PGPORT`: PostgreSQL Port
+- `DATABASE_URL`: PostgreSQL database connection string (required for database functionality)
+- `YOUTUBE_API_KEY`: YouTube API key for fetching channel data
+- `YOUTUBE_CHANNEL_ID`: Your YouTube channel ID
+- `FIREBASE_PROJECT_ID`: (Optional) Firebase project ID for fallback storage
+- `FIREBASE_PRIVATE_KEY`: (Optional) Firebase private key
+- `FIREBASE_CLIENT_EMAIL`: (Optional) Firebase client email
 
-## Build-Einstellungen
+## Deployment Process
 
-Setze die Netlify Build-Einstellungen:
+### Automatic Deployment
 
-- **Build command**: `./build-netlify.sh`
-- **Publish directory**: `dist`
-- **Functions directory**: `netlify/functions`
+1. Connect your repository to Netlify
+2. Set the build command to: `./build-netlify.sh`
+3. Set the publish directory to: `dist`
+4. Add the required environment variables in the Netlify dashboard
 
-## Automatische Umleitung
+### Manual Deployment
 
-Die Datei `netlify.toml` ist bereits konfiguriert, um alle API-Anfragen zu den Netlify-Funktionen umzuleiten und SPA-Routing zu unterstützen.
+1. Run `npm run build` to build the frontend
+2. Run `./build-netlify.sh` to build the Netlify functions
+3. Deploy the `dist` directory and the `netlify` directory
 
-## Wichtige Hinweise
+## Architecture Details
 
-- Die Webseite nutzt PostgreSQL als primären Speicher, mit einem Fallback zu Firebase und einem Memory-Speicher als letzte Option.
-- Bei jedem Deployment wird der Memory-Speicher zurückgesetzt. Um persistenten Speicher zu gewährleisten, stelle sicher, dass Firebase oder die PostgreSQL-Datenbank korrekt konfiguriert sind.
-- Netlify Functions haben ein Zeitlimit von 10 Sekunden. Stelle sicher, dass deine API-Anfragen schnell genug abgeschlossen werden.
+### Storage System
 
-## Problembehebung
+The application uses a tiered storage system:
 
-Wenn Probleme beim Deployment auftreten:
+1. **PostgreSQL Database** (primary storage)
+2. **Firebase** (fallback if PostgreSQL fails)
+3. **In-Memory Storage** (final fallback)
 
-1. Überprüfe die Logs in der Netlify-Benutzeroberfläche.
-2. Stelle sicher, dass alle Umgebungsvariablen korrekt gesetzt sind.
-3. Vergewissere dich, dass die Firebase-Konfiguration korrekt ist (insbesondere der Private Key).
-4. Wenn du eine PostgreSQL-Datenbank nutzt, prüfe die Verbindung und stelle sicher, dass die Datenbank aus dem Netlify-Netzwerk erreichbar ist.
+### Netlify-Specific Implementations
+
+Special considerations have been made for Netlify deployment:
+
+1. **CommonJS Compatibility**: Using `esbuild` to bundle TypeScript files into CommonJS format for Netlify Functions
+2. **Top-Level Await Handling**: Custom implementations to avoid top-level await in serverless functions
+3. **Environment Detection**: Code dynamically imports different implementations based on the environment
+
+### Netlify Functions
+
+Two key Netlify Functions are used:
+
+1. **api.js**: The main API handler for backend functionality
+2. **netlify-vite.js**: A special implementation to avoid Vite dependencies in production
+
+### Redirect Rules
+
+The `netlify.toml` file contains redirect rules to:
+
+1. Route API requests to the Netlify Function
+2. Serve the SPA (Single Page Application) for all other routes
+
+## Troubleshooting
+
+If you encounter issues with the deployment:
+
+1. Check the Netlify build logs for errors
+2. Verify that all environment variables are set correctly
+3. Ensure the database is accessible from Netlify's servers
+4. Check that the serverless function bundle size doesn't exceed Netlify's limits
+
+## Local Testing
+
+To test the Netlify functions locally:
+
+1. Install the Netlify CLI: `npm install -g netlify-cli`
+2. Run `netlify dev` to start a local development server
+
+## Additional Resources
+
+- [Netlify Functions Documentation](https://docs.netlify.com/functions/overview/)
+- [Netlify Environment Variables](https://docs.netlify.com/configure-builds/environment-variables/)
+- [Drizzle ORM Documentation](https://orm.drizzle.team/)

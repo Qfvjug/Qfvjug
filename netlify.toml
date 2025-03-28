@@ -3,11 +3,8 @@
   publish = "dist"
   functions = "netlify/functions"
 
-# Umleitung für API-Anfragen zu den Netlify-Funktionen
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+# Diese Umleitung ist nicht notwendig und verursacht Fehler
+# Netlify leitet automatisch zu Funktionen unter /.netlify/functions/ weiter
 
 # API-Anfragen zur Netlify-Funktion umleiten
 [[redirects]]
