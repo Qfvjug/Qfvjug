@@ -1,0 +1,107 @@
+1:38:26 PM: Netlify Build                                                 
+1:38:26 PM: ────────────────────────────────────────────────────────────────
+1:38:26 PM: ​
+1:38:26 PM: ❯ Version
+1:38:26 PM:   @netlify/build 30.0.6
+1:38:26 PM: ​
+1:38:26 PM: ❯ Flags
+1:38:26 PM:   accountId: 673d998ce2332450473d26c8
+1:38:26 PM:   baseRelDir: true
+1:38:26 PM:   buildId: 67e6981acf9a0d0007828e14
+1:38:26 PM:   deployId: 67e6981acf9a0d0007828e16
+1:38:26 PM: ​
+1:38:26 PM: ❯ Current directory
+1:38:26 PM:   /opt/build/repo
+1:38:26 PM: ​
+1:38:26 PM: ❯ Config file
+1:38:26 PM:   /opt/build/repo/netlify.toml
+1:38:26 PM: ​
+1:38:26 PM: ❯ Context
+1:38:26 PM:   production
+1:38:26 PM: ​
+1:38:26 PM: build.command from netlify.toml                               
+1:38:26 PM: ────────────────────────────────────────────────────────────────
+1:38:26 PM: ​
+1:38:26 PM: $ chmod +x ./build-netlify.sh && ./build-netlify.sh
+1:38:26 PM: Installing dependencies for Netlify functions...
+1:38:28 PM: added 13 packages, changed 6 packages, and audited 749 packages in 2s
+1:38:28 PM: 79 packages are looking for funding
+1:38:28 PM:   run `npm fund` for details
+1:38:28 PM: 8 moderate severity vulnerabilities
+1:38:28 PM: To address issues that do not require attention, run:
+1:38:28 PM:   npm audit fix
+1:38:28 PM: To address all issues (including breaking changes), run:
+1:38:28 PM:   npm audit fix --force
+1:38:28 PM: Run `npm audit` for details.
+1:38:28 PM: Building frontend with Vite...
+1:38:28 PM: > rest-express@1.0.0 build
+1:38:28 PM: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+1:38:29 PM: vite v5.4.14 building for production...
+1:38:29 PM: transforming...
+1:38:32 PM: ✓ 1769 modules transformed.
+1:38:32 PM: rendering chunks...
+1:38:32 PM: computing gzip size...
+1:38:32 PM: ../dist/public/index.html                          2.68 kB │ gzip:   1.15 kB
+1:38:32 PM: ../dist/public/assets/index-D87Tp3NR.css          66.46 kB │ gzip:  11.52 kB
+1:38:32 PM: ../dist/public/assets/skeleton-C1SddeMC.js         0.17 kB │ gzip:   0.16 kB
+1:38:32 PM: ../dist/public/assets/chevron-down-CKW2Zj8r.js     0.30 kB │ gzip:   0.24 kB
+1:38:32 PM: ../dist/public/assets/search-C6sE5YQW.js           0.34 kB │ gzip:   0.27 kB
+1:38:32 PM: ../dist/public/assets/download-h6K1V1x8.js         0.43 kB │ gzip:   0.32 kB
+1:38:32 PM: ../dist/public/assets/youtube-VKrFxN_X.js          0.74 kB │ gzip:   0.36 kB
+1:38:32 PM: ../dist/public/assets/VideosPage-Srqyzkjp.js       2.15 kB │ gzip:   0.89 kB
+1:38:32 PM: ../dist/public/assets/VideoCard-CwUG88fh.js        3.13 kB │ gzip:   1.36 kB
+1:38:32 PM: ../dist/public/assets/Login-B8GRoh-V.js            3.18 kB │ gzip:   1.47 kB
+1:38:32 PM: ../dist/public/assets/DownloadsPage-Bc7zm69O.js    5.54 kB │ gzip:   2.06 kB
+1:38:32 PM: ../dist/public/assets/HomePage-CqKKst4c.js        19.95 kB │ gzip:   5.97 kB
+1:38:32 PM: ../dist/public/assets/form-DOOY15Eu.js            88.87 kB │ gzip:  25.60 kB
+1:38:32 PM: ../dist/public/assets/AdminPanel-ClthCMxv.js      93.17 kB │ gzip:  24.52 kB
+1:38:32 PM: ../dist/public/assets/index-JgQbEMyq.js          321.43 kB │ gzip: 104.74 kB
+1:38:32 PM: ✓ built in 3.21s
+1:38:32 PM:   dist/index.js  67.5kb
+1:38:32 PM: ⚡ Done in 4ms
+1:38:32 PM: Building Netlify functions...
+1:38:33 PM:   netlify/functions/api.mjs  68.4kb
+1:38:33 PM: ⚡ Done in 5ms
+1:38:33 PM:   netlify/functions/netlify-vite.mjs  561b
+1:38:33 PM: ⚡ Done in 6ms
+1:38:33 PM: Creating package.json for Netlify functions...
+1:38:33 PM: Build completed successfully!
+1:38:33 PM: ​
+1:38:33 PM: (build.command completed in 6.6s)
+1:38:33 PM: ​
+1:38:33 PM: Functions bundling                                            
+1:38:33 PM: ────────────────────────────────────────────────────────────────
+1:38:33 PM: ​
+1:38:33 PM: Packaging Functions from netlify/functions directory:
+1:38:33 PM:  - api.ts
+1:38:33 PM:  - api.mjs
+1:38:33 PM:  - netlify-vite.ts
+1:38:33 PM:  - netlify-vite.mjs
+1:38:33 PM: ​
+1:38:33 PM: ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+1:38:33 PM:     netlify/functions/api.mjs:30:31:
+1:38:33 PM:       30 │ var __filename = fileURLToPath(import.meta.url);
+1:38:33 PM:          ╵                                ~~~~~~~~~~~
+1:38:33 PM:   You need to set the output format to "esm" for "import.meta" to work correctly.
+1:38:33 PM: ✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+1:38:33 PM:     netlify/functions/api.mjs:38:6:
+1:38:33 PM:       38 │       await import("@replit/vite-plugin-cartographer").then(
+1:38:33 PM:          ╵       ~~~~~
+1:38:33 PM: ▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+1:38:33 PM:     netlify/functions/api.mjs:58:33:
+1:38:33 PM:       58 │ var __filename2 = fileURLToPath2(import.meta.url);
+1:38:33 PM:          ╵                                  ~~~~~~~~~~~
+1:38:33 PM:   You need to set the output format to "esm" for "import.meta" to work correctly.
+1:38:34 PM: ▲ [WARNING] "esbuild" should be marked as external for use with "require.resolve" [require-resolve-not-external]
+1:38:34 PM:     node_modules/vite/node_modules/esbuild/lib/main.js:1653:36:
+1:38:34 PM:       1653 │   const libMainJS = require.resolve("esbuild");
+1:38:34 PM:            ╵                                     ~~~~~~~~~
+1:38:41 PM: ​
+1:38:41 PM: ❯ Failed to bundle functions with selected bundler (fallback used):
+1:38:41 PM:    - api.zip
+1:38:41 PM: ​
+1:38:41 PM: (Functions bundling completed in 8.5s)
+1:38:41 PM: ​
+1:38:50 PM: (Netlify Build completed in 24s)
+1:39:18 PM: Section completed: building
+1:39:24 PM: Finished processing build request in 1m25.531s

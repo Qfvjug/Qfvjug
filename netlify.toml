@@ -1,12 +1,14 @@
 [build]
   command = "chmod +x ./build-netlify.sh && ./build-netlify.sh"
-  publish = "dist"
+  publish = "dist/public"
   functions = "netlify/functions"
-  environment = { NODE_VERSION = "18" }
+  environment = { NODE_VERSION = "18", NODE_OPTIONS = "--experimental-modules" }
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@babel/preset-typescript", "lightningcss"]
+  # ESM-Modus explizit aktivieren
+  node_bundler_file_format = "esm"
 
 # Diese Umleitung ist nicht notwendig und verursacht Fehler
 # Netlify leitet automatisch zu Funktionen unter /.netlify/functions/ weiter

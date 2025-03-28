@@ -1,4 +1,7 @@
-import express, { Request, Response, NextFunction } from 'express';
+// ESM-spezifischer Header, um Node.js 18+ zu signalisieren
+// @ts-ignore
+import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import serverless from 'serverless-http';
 import cors from 'cors';
 import { registerRoutes } from '../../server/routes';

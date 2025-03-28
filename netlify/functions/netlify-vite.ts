@@ -1,4 +1,7 @@
-import express, { type Express } from "express";
+// ESM-spezifischer Header, um Node.js 18+ zu signalisieren
+// @ts-ignore
+import express from "express";
+import type { Express } from "express";
 import path from "path";
 
 // Simplified logger function for Netlify
