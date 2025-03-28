@@ -13,27 +13,28 @@ This document explains how to deploy the YouTube Gaming Channel Website to Netli
 
 The following environment variables must be set in Netlify:
 
-- `DATABASE_URL`: PostgreSQL database connection string (required for database functionality)
 - `YOUTUBE_API_KEY`: YouTube API key for fetching channel data
 - `YOUTUBE_CHANNEL_ID`: Your YouTube channel ID
-- `FIREBASE_PROJECT_ID`: (Optional) Firebase project ID for fallback storage
-- `FIREBASE_PRIVATE_KEY`: (Optional) Firebase private key
-- `FIREBASE_CLIENT_EMAIL`: (Optional) Firebase client email
+- `FIREBASE_PROJECT_ID`: Firebase project ID for storage
+- `FIREBASE_PRIVATE_KEY`: Firebase private key (must include all newlines and special characters)
+- `FIREBASE_CLIENT_EMAIL`: Firebase client email
+
+**Note:** The DATABASE_URL environment variable is no longer needed since the application now uses Firebase exclusively.
 
 ## Deployment Process
 
 ### Automatic Deployment
 
 1. Connect your repository to Netlify
-2. Set the build command to: `./build-netlify.sh`
-3. Set the publish directory to: `dist`
+2. Set the build command to: `chmod +x ./build-netlify.sh && ./build-netlify.sh`
+3. Set the publish directory to: `dist/public`
 4. Add the required environment variables in the Netlify dashboard
 
 ### Manual Deployment
 
-1. Run `npm run build` to build the frontend
-2. Run `./build-netlify.sh` to build the Netlify functions
-3. Deploy the `dist` directory and the `netlify` directory
+1. Make sure the build script is executable: `chmod +x ./build-netlify.sh`
+2. Run `./build-netlify.sh` to build the frontend and Netlify functions
+3. Deploy the `dist/public` directory and the `netlify/functions` directory
 
 ## Architecture Details
 
@@ -41,15 +42,14 @@ The following environment variables must be set in Netlify:
 
 The application uses a tiered storage system:
 
-1. **PostgreSQL Database** (primary storage)
-2. **Firebase** (fallback if PostgreSQL fails)
-3. **In-Memory Storage** (final fallback)
+1. **Firebase Firestore** (primary storage)
+2. **In-Memory Storage** (fallback if Firebase fails)
 
 ### Netlify-Specific Implementations
 
 Special considerations have been made for Netlify deployment:
 
-1. **CommonJS Compatibility**: Using `esbuild` to bundle TypeScript files into CommonJS format for Netlify Functions
+1. **ESM Compatibility**: Using ESM module format for Netlify Functions with proper Node.js 18+ support
 2. **Top-Level Await Handling**: Custom implementations to avoid top-level await in serverless functions
 3. **Environment Detection**: Code dynamically imports different implementations based on the environment
 
@@ -73,8 +73,11 @@ If you encounter issues with the deployment:
 
 1. Check the Netlify build logs for errors
 2. Verify that all environment variables are set correctly
-3. Ensure the database is accessible from Netlify's servers
-4. Check that the serverless function bundle size doesn't exceed Netlify's limits
+   - Make sure the `FIREBASE_PRIVATE_KEY` includes all newlines and special characters
+   - Check that your Netlify build environment is set to Node.js 18
+3. Ensure Firebase is properly configured with the right permissions
+4. Check that the serverless function bundle size doesn't exceed Netlify's limits (125MB)
+5. Review the ESM compatibility settings if you encounter module-related errors
 
 ## Local Testing
 
@@ -87,4 +90,5 @@ To test the Netlify functions locally:
 
 - [Netlify Functions Documentation](https://docs.netlify.com/functions/overview/)
 - [Netlify Environment Variables](https://docs.netlify.com/configure-builds/environment-variables/)
-- [Drizzle ORM Documentation](https://orm.drizzle.team/)
+- [Firebase Documentation](https://firebase.google.com/docs/firestore)
+- [Node.js ESM Modules](https://nodejs.org/api/esm.html)

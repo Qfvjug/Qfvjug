@@ -7,8 +7,10 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@babel/preset-typescript", "lightningcss"]
+  
   # ESM-Modus explizit aktivieren
-  node_bundler_file_format = "esm"
+  [functions.node_bundler_file_format]
+  # Leeres Objekt, da wir keine spezifischen Module konfigurieren müssen
 
 # Diese Umleitung ist nicht notwendig und verursacht Fehler
 # Netlify leitet automatisch zu Funktionen unter /.netlify/functions/ weiter
