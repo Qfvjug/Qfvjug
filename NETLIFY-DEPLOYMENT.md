@@ -25,16 +25,17 @@ The following environment variables must be set in Netlify:
 
 ### Automatic Deployment
 
-1. Connect your repository to Netlify
-2. Set the build command to: `chmod +x ./build-netlify.sh && ./build-netlify.sh`
-3. Set the publish directory to: `dist/public`
-4. Add the required environment variables in the Netlify dashboard
+1. Connect your repository to Netlify  
+2. Set the build command to: `npm run build`
+3. Set the publish directory to: `dist`
+4. Set the functions directory to: `netlify/functions`
+5. Add the required environment variables in the Netlify dashboard
 
 ### Manual Deployment
 
-1. Make sure the build script is executable: `chmod +x ./build-netlify.sh`
-2. Run `./build-netlify.sh` to build the frontend and Netlify functions
-3. Deploy the `dist/public` directory and the `netlify/functions` directory
+1. Run `npm run build` to build the frontend
+2. The Netlify functions are ready in the `netlify/functions` directory
+3. Deploy the `dist` directory and the `netlify/functions` directory
 
 ## Architecture Details
 
